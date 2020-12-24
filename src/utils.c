@@ -216,7 +216,7 @@ LIBIMOBILEDEVICE_GLUE_API char *string_format_size(uint64_t size)
 LIBIMOBILEDEVICE_GLUE_API char *string_toupper(char* str)
 {
 	char *res = strdup(str);
-	unsigned int i;
+	size_t i;
 	for (i = 0; i < strlen(res); i++) {
 		res[i] = toupper(res[i]);
 	}
