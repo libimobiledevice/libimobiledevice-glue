@@ -8,10 +8,12 @@ lib_LTLIBRARIES = libimobiledevice-glue-1.0.la
 libimobiledevice_glue_1_0_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(LIBIMOBILEDEVICE_GLUE_SO_VERSION) -no-undefined
 libimobiledevice_glue_1_0_la_LIBADD =
 libimobiledevice_glue_1_0_la_SOURCES =	\
-	socket.c				\
-	thread.c				\
-	utils.c					\
-	collection.c				\
+	glue.c	\
+	socket.c	\
+	thread.c	\
+	utils.c		\
+	collection.c	\
+	termcolors.c	\
 	common.h
 
 if WIN32
