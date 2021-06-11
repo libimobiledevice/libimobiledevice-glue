@@ -281,13 +281,13 @@ LIBIMOBILEDEVICE_GLUE_API int cvfprintf(FILE* stream, const char* fmt, va_list v
 			for (i = 0; i < num_esc; i++) {
 				p = &newbuf[esc_items[i].pos];
 				if (lastp < p) {
-					fprintf(stream, "%.*s", p-lastp, lastp);
+					fprintf(stream, "%.*s", (int)(p-lastp), lastp);
 					lastp = p;
 				}
 				SetConsoleTextAttribute(h_stream, esc_items[i].attr);
 			}
 			if (lastp < end) {
-				fprintf(stream, "%.*s", end-lastp, lastp);
+				fprintf(stream, "%.*s", (int)(end-lastp), lastp);
 			}
 			return res;
 		}
