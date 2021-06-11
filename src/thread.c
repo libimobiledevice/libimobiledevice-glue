@@ -177,7 +177,13 @@ int cond_wait(cond_t* cond, mutex_t* mutex)
 {
 #ifdef WIN32
 	mutex_unlock(mutex);
-	WaitForSingleObject(cond->sem, INFINITE);
+	DWORD res = WaitForSingleObject(cond->sem, INFINITE);
+	switch (res) {
+		case WAIT_OBJECT_0:
+			return 0;
+		default:
+			return -1;
+	}
 #else
 	return pthread_cond_wait(cond, mutex);
 #endif
@@ -187,7 +193,14 @@ int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms)
 {
 #ifdef WIN32
 	mutex_unlock(mutex);
-	WaitForSingleObject(cond->sem, timeout_ms);
+	DWORD res = WaitForSingleObject(cond->sem, timeout_ms);
+	switch (res) {
+		case WAIT_OBJECT_0:
+		case WAIT_TIMEOUT:
+			return 0;
+		default:
+			return -1;
+	}
 #else
 	struct timespec ts;
 	struct timeval now;
