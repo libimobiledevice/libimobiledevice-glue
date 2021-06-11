@@ -3,6 +3,8 @@
 Library with common code used by the libraries and tools around the
 **libimobiledevice** project.
 
+![](https://github.com/libimobiledevice/libimobiledevice-glue/workflows/build/badge.svg)
+
 ## Features
 
 The main functionality provided by this library are **socket** helper
