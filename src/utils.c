@@ -39,6 +39,9 @@
 #include "libimobiledevice-glue/utils.h"
 
 #ifndef HAVE_STPCPY
+#undef stpcpy
+char *stpcpy(char *s1, const char *s2);
+
 /**
  * Copy characters from one string into another
  *
