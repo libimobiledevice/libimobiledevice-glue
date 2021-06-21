@@ -534,13 +534,12 @@ static void plist_node_print_to_stream(plist_t node, int* indent_level, FILE* st
 	}
 }
 
-LIBIMOBILEDEVICE_GLUE_API void plist_print_to_stream(plist_t plist, FILE* stream)
+LIBIMOBILEDEVICE_GLUE_API void plist_print_to_stream_with_indentation(plist_t plist, FILE* stream, unsigned int indentation)
 {
-	int indent = 0;
-
 	if (!plist || !stream)
 		return;
 
+	int indent = indentation;
 	switch (plist_get_node_type(plist)) {
 	case PLIST_DICT:
 		plist_dict_print_to_stream(plist, &indent, stream);
@@ -551,4 +550,9 @@ LIBIMOBILEDEVICE_GLUE_API void plist_print_to_stream(plist_t plist, FILE* stream
 	default:
 		plist_node_print_to_stream(plist, &indent, stream);
 	}
+}
+
+LIBIMOBILEDEVICE_GLUE_API void plist_print_to_stream(plist_t plist, FILE* stream)
+{
+	plist_print_to_stream_with_indentation(plist, stream, 0);
 }
