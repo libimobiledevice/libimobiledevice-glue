@@ -142,7 +142,7 @@ LIBIMOBILEDEVICE_GLUE_API void thread_once(thread_once_t *once_control, void (*i
 #endif
 }
 
-void cond_init(cond_t* cond)
+LIBIMOBILEDEVICE_GLUE_API void cond_init(cond_t* cond)
 {
 #ifdef WIN32
 	cond->sem = CreateSemaphore(NULL, 0, 32767, NULL);
@@ -151,7 +151,7 @@ void cond_init(cond_t* cond)
 #endif
 }
 
-void cond_destroy(cond_t* cond)
+LIBIMOBILEDEVICE_GLUE_API void cond_destroy(cond_t* cond)
 {
 #ifdef WIN32
 	CloseHandle(cond->sem);
@@ -160,7 +160,7 @@ void cond_destroy(cond_t* cond)
 #endif
 }
 
-int cond_signal(cond_t* cond)
+LIBIMOBILEDEVICE_GLUE_API int cond_signal(cond_t* cond)
 {
 #ifdef WIN32
 	int result = 0;
@@ -173,7 +173,7 @@ int cond_signal(cond_t* cond)
 #endif
 }
 
-int cond_wait(cond_t* cond, mutex_t* mutex)
+LIBIMOBILEDEVICE_GLUE_API int cond_wait(cond_t* cond, mutex_t* mutex)
 {
 #ifdef WIN32
 	mutex_unlock(mutex);
@@ -189,7 +189,7 @@ int cond_wait(cond_t* cond, mutex_t* mutex)
 #endif
 }
 
-int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms)
+LIBIMOBILEDEVICE_GLUE_API int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms)
 {
 #ifdef WIN32
 	mutex_unlock(mutex);
