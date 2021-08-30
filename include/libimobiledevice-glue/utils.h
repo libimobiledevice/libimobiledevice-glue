@@ -36,6 +36,8 @@
 #include <stdio.h>
 #include <plist/plist.h>
 
+#define MAC_EPOCH 978307200
+
 char *string_concat(const char *str, ...);
 char *string_append(char *str, ...);
 char *string_build_path(const char *elem, ...);

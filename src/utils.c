@@ -38,8 +38,6 @@
 #include "common.h"
 #include "libimobiledevice-glue/utils.h"
 
-#define MAC_EPOCH 978307200
-
 #ifndef HAVE_STPCPY
 #undef stpcpy
 char *stpcpy(char *s1, const char *s2);
