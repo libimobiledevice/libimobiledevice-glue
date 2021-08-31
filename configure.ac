@@ -56,11 +56,18 @@ case ${host_os} in
     ;;
   darwin*)
     AC_MSG_RESULT([${host_os}])
+    AX_PTHREAD([], [AC_MSG_ERROR([pthread is required to build $PACKAGE])])
+    AC_CHECK_FUNCS([pthread_once pthread_cancel])
     ;;
   *)
     AC_MSG_RESULT([${host_os}])
     AX_PTHREAD([], [AC_MSG_ERROR([pthread is required to build $PACKAGE_NAME])])
-    AC_CHECK_LIB(pthread, [pthread_once], [], [AC_MSG_ERROR([pthread with pthread_once required to build $PACKAGE_NAME])])
+    AC_CHECK_FUNC(pthread_cancel, [AC_DEFINE(HAVE_PTHREAD_CANCEL)], [
+      AC_CHECK_LIB(pthread, [pthread_cancel],[AC_DEFINE(HAVE_PTHREAD_CANCEL)])
+    ])
+    AC_CHECK_FUNC(pthread_once, [AC_DEFINE(HAVE_PTHREAD_ONCE)], [
+      AC_CHECK_LIB(pthread, [pthread_once], [], [AC_MSG_ERROR([pthread with pthread_once required to build $PACKAGE_NAME])])
+    ])
     ;;
 esac
 AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
