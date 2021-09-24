@@ -13,11 +13,14 @@ Besides that it comes with a number of string, file, and plist helper
 functions, as well as some other commonly used code that was originally
 duplicated in the dedicated projects.
 
+Test on Linux, macOS, Windows.
+
 ## Projects using this library
 
 - [libusbmuxd](https://github.com/libimobiledevice/libusbmuxd)
 - [libimobiledevice](https://github.com/libimobiledevice/libimobiledevice)
 - [usbmuxd](https://github.com/libimobiledevice/usbmuxd)
+- [libirecovery](https://github.com/libimobiledevice/libirecovery)
 - [idevicerestore](https://github.com/libimobiledevice/idevicerestore)
 
 ## Installation / Getting started
@@ -100,4 +103,4 @@ iPadOS, tvOS, watchOS, and macOS are trademarks of Apple Inc.
 This project is an independent software and has not been authorized, sponsored,
 or otherwise approved by Apple Inc.
 
-README Updated on: 2021-06-07
+README Updated on: 2021-09-25
