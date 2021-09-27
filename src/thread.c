@@ -71,7 +71,7 @@ LIBIMOBILEDEVICE_GLUE_API int thread_alive(THREAD_T thread)
 	if (!thread)
 		return 0;
 #ifdef WIN32
-	return WaitForSingleObject(thread, 0) == WAIT_TIMEOUT;
+	return TerminateThread(thread, 0);
 #else
 	return pthread_kill(thread, 0) == 0;
 #endif
