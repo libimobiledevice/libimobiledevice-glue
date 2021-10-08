@@ -275,7 +275,7 @@ LIBIMOBILEDEVICE_GLUE_API int buffer_read_from_filename(const char *filename, ch
 
 	*buffer = (char*)malloc(sizeof(char)*(size+1));
 
-	if (!(*buffer)) {
+	if (*buffer == NULL) {
 		return 0;
 	}
 
