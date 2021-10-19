@@ -365,7 +365,7 @@ static const char base64_pad = '=';
 
 static char *base64encode(const unsigned char *buf, size_t size)
 {
-	if (!buf || !(size > 0)) return NULL;
+	if (!buf || size == 0) return NULL;
 	int outlen = (size / 3) * 4;
 	char *outbuf = (char*)malloc(outlen+5); // 4 spare bytes + 1 for '\0'
 	size_t n = 0;
