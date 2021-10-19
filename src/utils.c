@@ -257,6 +257,10 @@ LIBIMOBILEDEVICE_GLUE_API int buffer_read_from_filename(const char *filename, ch
 	FILE *f;
 	uint64_t size;
 
+	if (!filename || !buffer || !length) {
+		return 0;
+	}
+
 	*length = 0;
 
 	f = fopen(filename, "rb");
