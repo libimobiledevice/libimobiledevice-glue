@@ -55,7 +55,7 @@ static int wsa_init = 0;
 #ifdef AF_INET6
 #include <net/if.h>
 #include <ifaddrs.h>
-#ifdef __APPLE__
+#if defined (__APPLE__) || defined (__FreeBSD__)
 #include <net/if_dl.h>
 #endif
 #ifdef __linux__
@@ -714,11 +714,15 @@ LIBIMOBILEDEVICE_GLUE_API int get_primary_mac_address(unsigned char mac_addr_buf
 			if (ifa->ifa_flags & IFF_LOOPBACK) {
 				continue;
 			}
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined (__FreeBSD__)
 			if (ifa->ifa_addr->sa_family != AF_LINK) {
 				continue;
 			}
+#if defined (__APPLE__)
 			if (!strcmp(ifa->ifa_name, "en0")) {
+#elif defined (__FreeBSD__)
+			{
+#endif
 				memcpy(mac_addr_buf, (unsigned char *)LLADDR((struct sockaddr_dl *)(ifa)->ifa_addr), 6);
 				result = 0;
 				break;
