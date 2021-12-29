@@ -37,6 +37,7 @@ sudo apt-get install \
 	automake \
 	libtool-bin \
 	libplist-dev \
+	pkg-config \
 ```
 
 Then clone the actual project repository:
