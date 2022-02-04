@@ -15,6 +15,8 @@ libimobiledevice_glue_1_0_la_SOURCES =	\
 	collection.c	\
 	termcolors.c	\
 	cbuf.c          \
+	opack.c         \
+	tlv.c           \
 	common.h
 
 if WIN32
