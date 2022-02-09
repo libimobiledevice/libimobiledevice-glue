@@ -331,11 +331,7 @@ LIBIMOBILEDEVICE_GLUE_API int plist_read_from_filename(plist_t *plist, const cha
 		return 0;
 	}
 
-	if ((length > 8) && (memcmp(buffer, "bplist00", 8) == 0)) {
-		plist_from_bin(buffer, length, plist);
-	} else {
-		plist_from_xml(buffer, length, plist);
-	}
+	plist_from_memory(buffer, length, plist);
 
 	free(buffer);
 
