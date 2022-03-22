@@ -1223,10 +1223,19 @@ LIBIMOBILEDEVICE_GLUE_API int socket_receive_timeout(int fd, void *data, size_t 
 
 LIBIMOBILEDEVICE_GLUE_API int socket_send(int fd, void *data, size_t length)
 {
+	char buffer[1] = {0};
 	int flags = 0;
 	int res = socket_check_fd(fd, FDM_WRITE, SEND_TIMEOUT);
 	if (res <= 0) {
 		return res;
+	}
+	res = socket_check_fd(fd, FDM_READ, 1);
+	if (res > 0) {
+		if (recv(fd, buffer, 1, MSG_PEEK) <= 0) {
+			fprintf(stderr, "%s: fd=%d closed\n", __func__, fd);
+			errno = EIO;
+			return -EIO;
+		}
 	}
 #ifdef MSG_NOSIGNAL
 	flags |= MSG_NOSIGNAL;
