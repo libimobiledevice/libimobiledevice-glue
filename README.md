@@ -31,6 +31,7 @@ First install all required dependencies and build tools:
 ```shell
 sudo apt-get install \
 	build-essential \
+	pkg-config \
 	checkinstall \
 	git \
 	autoconf \
@@ -103,4 +104,4 @@ iPadOS, tvOS, watchOS, and macOS are trademarks of Apple Inc.
 This project is an independent software and has not been authorized, sponsored,
 or otherwise approved by Apple Inc.
 
-README Updated on: 2021-09-25
+README Updated on: 2022-04-04
