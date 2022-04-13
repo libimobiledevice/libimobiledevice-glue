@@ -25,6 +25,7 @@
 #endif
 
 #include <stdarg.h>
+#include <stdio.h>
 
 #define COLOR_RESET           "\e[m"
 #define STYLE_NORMAL          "\e[0m"
