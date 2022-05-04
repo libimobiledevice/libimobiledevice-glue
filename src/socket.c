@@ -81,10 +81,16 @@ static int wsa_init = 0;
 #endif
 
 static int verbose = 0;
+static int check_disconnect = 0;
 
 LIBIMOBILEDEVICE_GLUE_API void socket_set_verbose(int level)
 {
 	verbose = level;
+}
+
+LIBIMOBILEDEVICE_GLUE_API void socket_set_check_disconnect(int check)
+{
+	check_disconnect = check;
 }
 
 LIBIMOBILEDEVICE_GLUE_API const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
@@ -1224,9 +1230,20 @@ LIBIMOBILEDEVICE_GLUE_API int socket_receive_timeout(int fd, void *data, size_t 
 LIBIMOBILEDEVICE_GLUE_API int socket_send(int fd, void *data, size_t length)
 {
 	int flags = 0;
+	char buffer[1];
 	int res = socket_check_fd(fd, FDM_WRITE, SEND_TIMEOUT);
 	if (res <= 0) {
 		return res;
+	}
+	if(check_disconnect) {
+		res = socket_check_fd(fd, FDM_READ, 1);
+		if(res > 0) {
+			if(recv(fd, buffer, 1, MSG_PEEK) <= 0) {
+				fprintf(stderr, "%s: fd=%d has been closed\n", __func__, fd);
+				errno = EIO;
+				return -EIO;
+			}
+		}
 	}
 #ifdef MSG_NOSIGNAL
 	flags |= MSG_NOSIGNAL;

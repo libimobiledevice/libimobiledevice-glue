@@ -62,6 +62,7 @@ int socket_send(int fd, void *data, size_t length);
 int socket_get_socket_port(int fd, uint16_t *port);
 
 void socket_set_verbose(int level);
+void socket_set_check_disconnect(int check);
 
 const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size);
 
