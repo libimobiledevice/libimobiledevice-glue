@@ -736,7 +736,7 @@ LIBIMOBILEDEVICE_GLUE_API int get_primary_mac_address(unsigned char mac_addr_buf
 				result = 0;
 				break;
 			}
-#elif defined (WIN32)
+#elif defined (WIN32) || defined(__CYGWIN__)
 			if (ifa->ifa_data) {
 				memcpy(mac_addr_buf, ifa->ifa_data, 6);
 				result = 0;
