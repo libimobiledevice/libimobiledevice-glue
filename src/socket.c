@@ -190,76 +190,76 @@ LIBIMOBILEDEVICE_GLUE_API int socket_create_unix(const char *filename)
 
 enum poll_status
 {
-    poll_status_success,
-    poll_status_timeout,
-    poll_status_error
+	poll_status_success,
+	poll_status_timeout,
+	poll_status_error
 };
 
 // timeoutMilliseconds of -1 means infinity
 static enum poll_status poll_wrapper(int fd, fd_mode mode, int timeoutMilliseconds)
 {
-    // https://man7.org/linux/man-pages/man2/select.2.html
-    // Correspondence between select() and poll() notifications
-    // #define POLLIN_SET  (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN |
-    //                      EPOLLHUP | EPOLLERR)
-    //                    /* Ready for reading */
-    // #define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT |
-    //                      EPOLLERR)
-    //                    /* Ready for writing */
-    // #define POLLEX_SET  (EPOLLPRI)
-    //                    /* Exceptional condition */
+	// https://man7.org/linux/man-pages/man2/select.2.html
+	// Correspondence between select() and poll() notifications
+	// #define POLLIN_SET  (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN |
+	//                      EPOLLHUP | EPOLLERR)
+	//                    /* Ready for reading */
+	// #define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT |
+	//                      EPOLLERR)
+	//                    /* Ready for writing */
+	// #define POLLEX_SET  (EPOLLPRI)
+	//                    /* Exceptional condition */
 
-    short events;
-    switch(mode)
-    {
-        case FDM_READ:
-            events = POLLRDNORM | POLLRDBAND | POLLIN | POLLHUP | POLLERR;
-            break;
-        case FDM_WRITE:
-            events = POLLWRBAND | POLLWRNORM | POLLOUT | POLLERR;
-            break;
-        case FDM_EXCEPT:
-            events = POLLPRI;
-            break;
-        default:
-            if (verbose >= 2)
-                fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
-            return poll_status_error;
-    }
-    while(1)
-    {
-        struct pollfd pfd = {
-            .fd = fd,
-            .events = events,
-        };
-        switch(poll(&pfd, 1, timeoutMilliseconds))
-        {
-            case 1:
-                if((pfd.revents & (POLLNVAL | POLLERR)) != 0)
-                {
-                    if (verbose >= 2)
-                        fprintf(stderr, "%s: poll unexpected events: %d\n", __func__,
-                                (int)pfd.revents);
-                    return poll_status_error;
-                }
-                return poll_status_success;
-            case 0:
-                return poll_status_timeout;
-            case -1:
-                if(errno == EINTR)
-                {
-                    if (verbose >= 2)
-                        fprintf(stderr, "%s: EINTR\n", __func__);
-                    continue;
-                }
-                // fallthrough
-            default:
-                if (verbose >= 2)
-                    fprintf(stderr, "%s: poll failed: %s\n", __func__,
-                            strerror(errno));
-                return poll_status_error;
-        }
-    }
+	short events;
+	switch(mode)
+	{
+		case FDM_READ:
+			events = POLLRDNORM | POLLRDBAND | POLLIN | POLLHUP | POLLERR;
+			break;
+		case FDM_WRITE:
+			events = POLLWRBAND | POLLWRNORM | POLLOUT | POLLERR;
+			break;
+		case FDM_EXCEPT:
+			events = POLLPRI;
+			break;
+		default:
+			if (verbose >= 2)
+				fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
+			return poll_status_error;
+	}
+	while(1)
+	{
+		struct pollfd pfd = {
+			.fd = fd,
+			.events = events,
+		};
+		switch(poll(&pfd, 1, timeoutMilliseconds))
+		{
+			case 1:
+				if((pfd.revents & (POLLNVAL | POLLERR)) != 0)
+				{
+					if (verbose >= 2)
+						fprintf(stderr, "%s: poll unexpected events: %d\n", __func__,
+								(int)pfd.revents);
+					return poll_status_error;
+				}
+				return poll_status_success;
+			case 0:
+				return poll_status_timeout;
+			case -1:
+				if(errno == EINTR)
+				{
+					if (verbose >= 2)
+						fprintf(stderr, "%s: EINTR\n", __func__);
+					continue;
+				}
+				// fallthrough
+			default:
+				if (verbose >= 2)
+					fprintf(stderr, "%s: poll failed: %s\n", __func__,
+							strerror(errno));
+				return poll_status_error;
+		}
+	}
 }
 
 LIBIMOBILEDEVICE_GLUE_API int socket_connect_unix(const char *filename)
@@ -321,7 +321,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_unix(const char *filename)
 			break;
 		}
 		if (errno == EINPROGRESS) {
-            if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -992,7 +992,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_addr(struct sockaddr* addr, uint16_
 		if (errno == EINPROGRESS)
 #endif
 		{
-            if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -1109,7 +1109,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect(const char *addr, uint16_t port)
 		if (errno == EINPROGRESS)
 #endif
 		{
-            if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -1152,29 +1152,29 @@ LIBIMOBILEDEVICE_GLUE_API int socket_check_fd(int fd, fd_mode fdm, unsigned int 
 		return -1;
 	}
 
-    int timeoutMilliseconds;
-    if(timeout > 0)
-    {
-        timeoutMilliseconds = (int)timeout;
-        if(timeoutMilliseconds <= 0)
-            timeoutMilliseconds = -1;
-    }
-    else
-    {
-        timeoutMilliseconds = -1;
-    }
+	int timeoutMilliseconds;
+	if(timeout > 0)
+	{
+		timeoutMilliseconds = (int)timeout;
+		if(timeoutMilliseconds <= 0)
+			timeoutMilliseconds = -1;
+	}
+	else
+	{
+		timeoutMilliseconds = -1;
+	}
 
-    switch(poll_wrapper(fd, fdm, timeoutMilliseconds))
-    {
-        case poll_status_success:
-            return 1;
-        case poll_status_timeout:
-            return -ETIMEDOUT;
-        case poll_status_error:
-            if (verbose >= 2)
-                fprintf(stderr, "%s: poll_wrapper failed\n", __func__);
-            return -1;
-    }
+	switch(poll_wrapper(fd, fdm, timeoutMilliseconds))
+	{
+		case poll_status_success:
+			return 1;
+		case poll_status_timeout:
+			return -ETIMEDOUT;
+		case poll_status_error:
+			if (verbose >= 2)
+				fprintf(stderr, "%s: poll_wrapper failed\n", __func__);
+			return -1;
+	}
 
 	return -1;
 }
