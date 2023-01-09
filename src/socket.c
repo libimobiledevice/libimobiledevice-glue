@@ -742,6 +742,12 @@ LIBIMOBILEDEVICE_GLUE_API int get_primary_mac_address(unsigned char mac_addr_buf
 				result = 0;
 				break;
 			}
+#elif defined(__CYGWIN__)
+			if (ifa->ifa_data) {
+				memcpy(mac_addr_buf, ((struct ifaddrs_hwdata *)ifa->ifa_data)->ifa_hwaddr.sa_data, 6);
+				result = 0;
+				break;
+			}
 #else
 #error get_primary_mac_address is not supported on this platform.
 #endif
