@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.68)
-AC_INIT([libimobiledevice-glue], [1.0.0], [https://github.com/libimobiledevice/libimobiledevice-glue/issues],, [https://libimobiledevice.org])
+AC_PREREQ([2.68])
+AC_INIT([libimobiledevice-glue], [m4_esyscmd(./git-version-gen $RELEASE_VERSION)], [https://github.com/libimobiledevice/libimobiledevice-glue/issues], [], [https://libimobiledevice.org])
 AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip check-news])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 AC_CONFIG_SRCDIR([src/])
@@ -16,6 +16,11 @@ dnl libtool versioning
 #  ? :+1 : ?   == just internal changes
 # CURRENT : REVISION : AGE
 LIBIMOBILEDEVICE_GLUE_SO_VERSION=0:0:0
+
+# Check if we have a version defined
+if test -z $PACKAGE_VERSION; then
+  AC_MSG_ERROR([PACKAGE_VERSION is not defined. Make sure to configure a source tree checked out from git or that .tarball-version is present.])
+fi
 
 dnl Minimum package versions
 LIBPLIST_VERSION=2.3.0
