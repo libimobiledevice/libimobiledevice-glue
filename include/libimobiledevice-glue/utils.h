@@ -34,6 +34,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdint.h>
 
 #define MAC_EPOCH 978307200
 
