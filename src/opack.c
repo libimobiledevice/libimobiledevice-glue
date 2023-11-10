@@ -206,7 +206,7 @@ static void opack_encode_node(plist_t node, struct char_buf* cbuf)
 						if (len >> 32) {
 							uint8_t blen = 0x94;
 							char_buf_append(cbuf, 1, &blen);
-							uint32_t u64val = htole64(len);
+							uint64_t u64val = htole64(len);
 							char_buf_append(cbuf, 8, (unsigned char*)&u64val);
 						} else {
 							uint8_t blen = 0x93;
