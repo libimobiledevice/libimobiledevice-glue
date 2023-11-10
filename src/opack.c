@@ -304,11 +304,11 @@ static int opack_decode_obj(unsigned char** p, unsigned char* end, plist_t* plis
 		} else if (type == 0x32) {
 			uint32_t u32val = *(uint32_t*)*p;
 			value = (int32_t)le32toh(u32val);
-			(p)+=4;
+			(*p)+=4;
 		} else if (type == 0x33) {
 			uint64_t u64val = *(uint64_t*)*p;
 			value = le64toh(u64val);
-			(p)+=8;
+			(*p)+=8;
 		} else {
 			fprintf(stderr, "%s: ERROR: Invalid encoded byte '%02x'\n", __func__, type);
 			*p = end;
