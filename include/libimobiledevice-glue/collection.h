@@ -19,19 +19,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef COLLECTION_H
-#define COLLECTION_H
+#ifndef __LIMD_COLLECTION_H
+#define __LIMD_COLLECTION_H
 
-struct collection {
+#include <stddef.h>
+#include <stdint.h>
+
+typedef struct collection {
 	void **list;
 	int capacity;
-};
+} collection_t;
 
 void collection_init(struct collection *col);
+collection_t* collection_new(void);
 void collection_add(struct collection *col, void *element);
 int collection_remove(struct collection *col, void *element);
 int collection_count(struct collection *col);
 void collection_free(struct collection *col);
+void collection_free_all(struct collection *col);
+void collection_ensure_capacity(struct collection *col, size_t size);
 void collection_copy(struct collection *dest, struct collection *src);
 
 #define MERGE_(a,b) a ## _ ## b
@@ -49,4 +55,4 @@ void collection_copy(struct collection *dest, struct collection *src);
 		} \
 	} while(0);
 
-#endif
+#endif // __LIMD_COLLECTION_H
