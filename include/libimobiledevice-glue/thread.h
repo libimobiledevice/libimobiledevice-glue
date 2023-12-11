@@ -25,14 +25,15 @@
 #include <stddef.h>
 
 #ifdef WIN32
-#include <windows.h>
+typedef void* HANDLE;
 typedef HANDLE THREAD_T;
-typedef CRITICAL_SECTION mutex_t;
+struct _RTL_CRITICAL_SECTION;
+typedef struct _RTL_CRITICAL_SECTION mutex_t;
 typedef struct {
 	HANDLE sem;
 } cond_t;
 typedef volatile struct {
-	LONG lock;
+	long lock;
 	int state;
 } thread_once_t;
 #define THREAD_ONCE_INIT {0, 0}
