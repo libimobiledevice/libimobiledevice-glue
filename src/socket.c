@@ -65,7 +65,9 @@ static int wsa_init = 0;
 #endif
 #include "common.h"
 #include "libimobiledevice-glue/socket.h"
+#ifdef HAVE_POLL
 #include <sys/poll.h>
+#endif
 
 #define RECV_TIMEOUT 20000
 #define SEND_TIMEOUT 10000
@@ -148,9 +150,10 @@ enum poll_status
 	poll_status_error
 };
 
-// timeoutMilliseconds of -1 means infinity
-static enum poll_status poll_wrapper(int fd, fd_mode mode, int timeoutMilliseconds)
+// timeout of -1 means infinity
+static inline __attribute__((always_inline)) enum poll_status poll_wrapper(int fd, fd_mode mode, int timeout)
 {
+#ifdef HAVE_POLL
 	// https://man7.org/linux/man-pages/man2/select.2.html
 	// Correspondence between select() and poll() notifications
 	// #define POLLIN_SET  (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN |
@@ -163,8 +166,7 @@ static enum poll_status poll_wrapper(int fd, fd_mode mode, int timeoutMillisecon
 	//                    /* Exceptional condition */
 
 	short events;
-	switch(mode)
-	{
+	switch (mode) {
 		case FDM_READ:
 			events = POLLRDNORM | POLLRDBAND | POLLIN | POLLHUP | POLLERR;
 			break;
@@ -179,20 +181,17 @@ static enum poll_status poll_wrapper(int fd, fd_mode mode, int timeoutMillisecon
 				fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
 			return poll_status_error;
 	}
-	while(1)
-	{
+	while (1) {
 		struct pollfd pfd = {
 			.fd = fd,
 			.events = events,
 		};
-		switch(poll(&pfd, 1, timeoutMilliseconds))
-		{
+		switch (poll(&pfd, 1, timeout)) {
 			case 1:
 				if((pfd.revents & (POLLNVAL | POLLERR)) != 0)
 				{
 					if (verbose >= 2)
-						fprintf(stderr, "%s: poll unexpected events: %d\n", __func__,
-								(int)pfd.revents);
+						fprintf(stderr, "%s: poll unexpected events: %d\n", __func__, (int)pfd.revents);
 					return poll_status_error;
 				}
 				return poll_status_success;
@@ -208,11 +207,73 @@ static enum poll_status poll_wrapper(int fd, fd_mode mode, int timeoutMillisecon
 				// fallthrough
 			default:
 				if (verbose >= 2)
-					fprintf(stderr, "%s: poll failed: %s\n", __func__,
-							strerror(errno));
+					fprintf(stderr, "%s: poll failed: %s\n", __func__, strerror(errno));
 				return poll_status_error;
 		}
 	}
+#else
+	fd_set fds;
+	int sret;
+	int eagain;
+	struct timeval to;
+	struct timeval *pto;
+
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+
+	sret = poll_status_error;
+
+	do {
+		if (timeout > 0) {
+			to.tv_sec = (time_t) (timeout / 1000);
+			to.tv_usec = (time_t) ((timeout - (to.tv_sec * 1000)) * 1000);
+			pto = &to;
+		} else {
+			pto = NULL;
+		}
+		eagain = 0;
+		switch (mode) {
+		case FDM_READ:
+			sret = select(fd + 1, &fds, NULL, NULL, pto);
+			break;
+		case FDM_WRITE:
+			sret = select(fd + 1, NULL, &fds, NULL, pto);
+			break;
+		case FDM_EXCEPT:
+			sret = select(fd + 1, NULL, NULL, &fds, pto);
+			break;
+		default:
+			if (verbose >= 2)
+				fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
+			return poll_status_error;
+		}
+
+		if (sret == 1) {
+			return poll_status_success;
+		} else if (sret == 0) {
+			return poll_status_timeout;
+		} else {
+			switch (errno) {
+			case EINTR:
+				// interrupt signal in select
+				if (verbose >= 2)
+					fprintf(stderr, "%s: EINTR\n", __func__);
+				eagain = 1;
+				break;
+			case EAGAIN:
+				if (verbose >= 2)
+					fprintf(stderr, "%s: EAGAIN\n", __func__);
+				break;
+			default:
+				if (verbose >= 2)
+					fprintf(stderr, "%s: select failed: %s\n", __func__, strerror(errno));
+				return poll_status_error;
+			}
+		}
+	} while (eagain);
+
+	return sret;
+#endif
 }
 
 #ifndef WIN32
@@ -321,7 +382,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_unix(const char *filename)
 			break;
 		}
 		if (errno == EINPROGRESS) {
-			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if (poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -998,7 +1059,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_addr(struct sockaddr* addr, uint16_
 		if (errno == EINPROGRESS)
 #endif
 		{
-			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if (poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -1115,7 +1176,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect(const char *addr, uint16_t port)
 		if (errno == EINPROGRESS)
 #endif
 		{
-			if(poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
+			if (poll_wrapper(sfd, FDM_WRITE, CONNECT_TIMEOUT) == poll_status_success) {
 				int so_error;
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
@@ -1158,25 +1219,22 @@ LIBIMOBILEDEVICE_GLUE_API int socket_check_fd(int fd, fd_mode fdm, unsigned int 
 		return -1;
 	}
 
-	int timeoutMilliseconds;
-	if(timeout > 0)
-	{
-		timeoutMilliseconds = (int)timeout;
-		if(timeoutMilliseconds <= 0)
-			timeoutMilliseconds = -1;
-	}
-	else
-	{
-		timeoutMilliseconds = -1;
+	int timeout_ms;
+	if (timeout > 0) {
+		timeout_ms = (int)timeout;
+		if (timeout_ms <= 0)
+			timeout_ms = -1;
+	} else {
+		timeout_ms = -1;
 	}
 
-	switch(poll_wrapper(fd, fdm, timeoutMilliseconds))
-	{
+	switch (poll_wrapper(fd, fdm, timeout_ms)) {
 		case poll_status_success:
 			return 1;
 		case poll_status_timeout:
 			return -ETIMEDOUT;
 		case poll_status_error:
+		default:
 			if (verbose >= 2)
 				fprintf(stderr, "%s: poll_wrapper failed\n", __func__);
 			return -1;
