@@ -110,12 +110,12 @@ fi
 AC_CHECK_MEMBER(struct dirent.d_type, AC_DEFINE(HAVE_DIRENT_D_TYPE, 1, [define if struct dirent has member d_type]),, [#include <dirent.h>])
 
 AS_COMPILER_FLAGS(GLOBAL_CFLAGS, "-Wall -Wextra -Wmissing-declarations -Wredundant-decls -Wshadow -Wpointer-arith -Wwrite-strings -Wswitch-default -Wno-unused-parameter -fsigned-char -fvisibility=hidden")
-AC_SUBST(GLOBAL_CFLAGS)
 
-case "$GLOBAL_CFLAGS" in
-  *-fvisibility=hidden*)
-    AC_DEFINE([HAVE_FVISIBILITY], [1], [Define if compiled with -fvisibility=hidden])
-esac
+if test "x$enable_static" = "xyes" -a "x$enable_shared" = "xno"; then
+  GLOBAL_CFLAGS+=" -DLIMD_GLUE_STATIC"
+fi
+
+AC_SUBST(GLOBAL_CFLAGS)
 
 # check for large file support
 AC_SYS_LARGEFILE

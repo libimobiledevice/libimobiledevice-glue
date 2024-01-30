@@ -26,6 +26,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <libimobiledevice-glue/glue.h>
 
 #define COLOR_RESET           "\e[m"
 #define STYLE_NORMAL          "\e[0m"
@@ -74,14 +75,14 @@
 #define BG_DEFAULT            "\e[49m"
 
 /* automatically called by library constructor */
-void term_colors_init();
+LIMD_GLUE_API void term_colors_init();
 
 /* enable / disable terminal colors */
-void term_colors_set_enabled(int en);
+LIMD_GLUE_API void term_colors_set_enabled(int en);
 
 /* color-aware *printf variants */
-int cprintf(const char* fmt, ...);
-int cfprintf(FILE* stream, const char* fmt, ...);
-int cvfprintf(FILE* stream, const char* fmt, va_list vargs);
+LIMD_GLUE_API int cprintf(const char* fmt, ...);
+LIMD_GLUE_API int cfprintf(FILE* stream, const char* fmt, ...);
+LIMD_GLUE_API int cvfprintf(FILE* stream, const char* fmt, va_list vargs);
 
 #endif

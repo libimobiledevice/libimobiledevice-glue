@@ -75,7 +75,7 @@ char *stpcpy(char *s1, const char *s2)
  * @return a newly allocated string, or NULL if @str is NULL.  This will also
  * return NULL and set errno to ENOMEM if memory is exhausted.
  */
-LIBIMOBILEDEVICE_GLUE_API char *string_concat(const char *str, ...)
+char *string_concat(const char *str, ...)
 {
 	size_t len;
 	va_list args;
@@ -119,7 +119,7 @@ LIBIMOBILEDEVICE_GLUE_API char *string_concat(const char *str, ...)
 	return result;
 }
 
-LIBIMOBILEDEVICE_GLUE_API char *string_append(char* str, ...)
+char *string_append(char* str, ...)
 {
 	size_t len = 0;
 	size_t slen;
@@ -163,7 +163,7 @@ LIBIMOBILEDEVICE_GLUE_API char *string_append(char* str, ...)
 	return result;
 }
 
-LIBIMOBILEDEVICE_GLUE_API char *string_build_path(const char *elem, ...)
+char *string_build_path(const char *elem, ...)
 {
 	if (!elem)
 		return NULL;
@@ -191,7 +191,7 @@ LIBIMOBILEDEVICE_GLUE_API char *string_build_path(const char *elem, ...)
 	return out;
 }
 
-LIBIMOBILEDEVICE_GLUE_API char *string_format_size(uint64_t size)
+char *string_format_size(uint64_t size)
 {
 	char buf[80];
 	double sz;
@@ -213,7 +213,7 @@ LIBIMOBILEDEVICE_GLUE_API char *string_format_size(uint64_t size)
 	return strdup(buf);
 }
 
-LIBIMOBILEDEVICE_GLUE_API char *string_toupper(char* str)
+char *string_toupper(char* str)
 {
 	char *res = strdup(str);
 	size_t i;
@@ -229,7 +229,7 @@ static int get_rand(int min, int max)
 	return retval;
 }
 
-LIBIMOBILEDEVICE_GLUE_API char *generate_uuid()
+char *generate_uuid()
 {
 	const char *chars = "ABCDEF0123456789";
 	int i = 0;
@@ -251,7 +251,7 @@ LIBIMOBILEDEVICE_GLUE_API char *generate_uuid()
 	return uuid;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length)
+int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length)
 {
 	FILE *f;
 	uint64_t size;
@@ -295,7 +295,7 @@ LIBIMOBILEDEVICE_GLUE_API int buffer_read_from_filename(const char *filename, ch
 	return ret;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length)
+int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length)
 {
 	FILE *f;
 

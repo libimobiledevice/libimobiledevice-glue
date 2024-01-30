@@ -21,9 +21,10 @@
 #ifndef __OPACK_H
 #define __OPACK_H
 
+#include <libimobiledevice-glue/glue.h>
 #include <plist/plist.h>
 
-void opack_encode_from_plist(plist_t plist, unsigned char** out, unsigned int* out_len);
-int opack_decode_to_plist(unsigned char* buf, unsigned int buf_len, plist_t* plist_out);
+LIMD_GLUE_API void opack_encode_from_plist(plist_t plist, unsigned char** out, unsigned int* out_len);
+LIMD_GLUE_API int opack_decode_to_plist(unsigned char* buf, unsigned int buf_len, plist_t* plist_out);
 
 #endif /* __OPACK_H */

@@ -92,7 +92,7 @@ static int bgcolor_map[8] = {
 static int WIN32_LEGACY_MODE = 0;
 #endif
 
-LIBIMOBILEDEVICE_GLUE_API void term_colors_init()
+void term_colors_init()
 {	
 #ifdef WIN32
 	DWORD conmode = 0;
@@ -126,12 +126,12 @@ LIBIMOBILEDEVICE_GLUE_API void term_colors_init()
 	}
 }
 
-LIBIMOBILEDEVICE_GLUE_API void term_colors_set_enabled(int en)
+void term_colors_set_enabled(int en)
 {
 	use_colors = en;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int cvfprintf(FILE* stream, const char* fmt, va_list vargs)
+int cvfprintf(FILE* stream, const char* fmt, va_list vargs)
 {
 	int res = 0;
 	int colorize = use_colors;
@@ -298,7 +298,7 @@ LIBIMOBILEDEVICE_GLUE_API int cvfprintf(FILE* stream, const char* fmt, va_list v
 	return res;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int cfprintf(FILE* stream, const char* fmt, ...)
+int cfprintf(FILE* stream, const char* fmt, ...)
 {
 	int res = 0;
 	va_list va;
@@ -308,7 +308,7 @@ LIBIMOBILEDEVICE_GLUE_API int cfprintf(FILE* stream, const char* fmt, ...)
 	return res;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int cprintf(const char* fmt, ...)
+int cprintf(const char* fmt, ...)
 {
 	int res = 0;
 	va_list va;

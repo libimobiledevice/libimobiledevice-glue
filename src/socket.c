@@ -85,12 +85,12 @@ static int wsa_init = 0;
 
 static int verbose = 0;
 
-LIBIMOBILEDEVICE_GLUE_API void socket_set_verbose(int level)
+void socket_set_verbose(int level)
 {
 	verbose = level;
 }
 
-LIBIMOBILEDEVICE_GLUE_API const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
+const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
 {
 #ifdef WIN32
 	WSADATA wsa_data;
@@ -277,7 +277,7 @@ static inline __attribute__((always_inline)) enum poll_status poll_wrapper(int f
 }
 
 #ifndef WIN32
-LIBIMOBILEDEVICE_GLUE_API int socket_create_unix(const char *filename)
+int socket_create_unix(const char *filename)
 {
 	struct sockaddr_un name;
 	int sock;
@@ -323,7 +323,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_create_unix(const char *filename)
 	return sock;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_connect_unix(const char *filename)
+int socket_connect_unix(const char *filename)
 {
 	struct sockaddr_un name;
 	int sfd = -1;
@@ -405,7 +405,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_unix(const char *filename)
 }
 #endif
 
-LIBIMOBILEDEVICE_GLUE_API int socket_create(const char* addr, uint16_t port)
+int socket_create(const char* addr, uint16_t port)
 {
 	int sfd = -1;
 	int yes = 1;
@@ -828,7 +828,7 @@ static int getifaddrs(struct ifaddrs** ifap)
 #endif
 #endif
 
-LIBIMOBILEDEVICE_GLUE_API int get_primary_mac_address(unsigned char mac_addr_buf[6])
+int get_primary_mac_address(unsigned char mac_addr_buf[6])
 {
 	int result = -1;
 	struct ifaddrs *ifaddr = NULL, *ifa = NULL;
@@ -975,7 +975,7 @@ static int32_t _sockaddr_in6_scope_id(struct sockaddr_in6* addr)
 }
 #endif
 
-LIBIMOBILEDEVICE_GLUE_API int socket_connect_addr(struct sockaddr* addr, uint16_t port)
+int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 {
 	int sfd = -1;
 	int yes = 1;
@@ -1098,7 +1098,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect_addr(struct sockaddr* addr, uint16_
 	return sfd;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_connect(const char *addr, uint16_t port)
+int socket_connect(const char *addr, uint16_t port)
 {
 	int sfd = -1;
 	int yes = 1;
@@ -1211,7 +1211,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_connect(const char *addr, uint16_t port)
 	return sfd;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_check_fd(int fd, fd_mode fdm, unsigned int timeout)
+int socket_check_fd(int fd, fd_mode fdm, unsigned int timeout)
 {
 	if (fd < 0) {
 		if (verbose >= 2)
@@ -1243,7 +1243,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_check_fd(int fd, fd_mode fdm, unsigned int 
 	return -1;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_accept(int fd, uint16_t port)
+int socket_accept(int fd, uint16_t port)
 {
 #ifdef WIN32
 	int addr_len;
@@ -1259,12 +1259,12 @@ LIBIMOBILEDEVICE_GLUE_API int socket_accept(int fd, uint16_t port)
 	return result;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_shutdown(int fd, int how)
+int socket_shutdown(int fd, int how)
 {
 	return shutdown(fd, how);
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_close(int fd) {
+int socket_close(int fd) {
 #ifdef WIN32
 	return closesocket(fd);
 #else
@@ -1272,17 +1272,17 @@ LIBIMOBILEDEVICE_GLUE_API int socket_close(int fd) {
 #endif
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_receive(int fd, void *data, size_t length)
+int socket_receive(int fd, void *data, size_t length)
 {
 	return socket_receive_timeout(fd, data, length, 0, RECV_TIMEOUT);
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_peek(int fd, void *data, size_t length)
+int socket_peek(int fd, void *data, size_t length)
 {
 	return socket_receive_timeout(fd, data, length, MSG_PEEK, RECV_TIMEOUT);
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigned int timeout)
+int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigned int timeout)
 {
 	int res;
 	int result;
@@ -1306,7 +1306,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_receive_timeout(int fd, void *data, size_t 
 	return result;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_send(int fd, void *data, size_t length)
+int socket_send(int fd, void *data, size_t length)
 {
 	int flags = 0;
 	int res = socket_check_fd(fd, FDM_WRITE, SEND_TIMEOUT);
@@ -1319,7 +1319,7 @@ LIBIMOBILEDEVICE_GLUE_API int socket_send(int fd, void *data, size_t length)
 	return send(fd, data, length, flags);
 }
 
-LIBIMOBILEDEVICE_GLUE_API int socket_get_socket_port(int fd, uint16_t *port)
+int socket_get_socket_port(int fd, uint16_t *port)
 {
 #ifdef WIN32
 	int addr_len;

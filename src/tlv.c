@@ -32,7 +32,7 @@
 #include "libimobiledevice-glue/tlv.h"
 #include "endianness.h"
 
-LIBIMOBILEDEVICE_GLUE_API tlv_buf_t tlv_buf_new()
+tlv_buf_t tlv_buf_new()
 {
 	tlv_buf_t tlv = malloc(sizeof(struct tlv_buf));
 	tlv->capacity = 1024;
@@ -41,7 +41,7 @@ LIBIMOBILEDEVICE_GLUE_API tlv_buf_t tlv_buf_new()
 	return tlv;	
 }
 
-LIBIMOBILEDEVICE_GLUE_API void tlv_buf_free(tlv_buf_t tlv)
+void tlv_buf_free(tlv_buf_t tlv)
 {
 	if (tlv) {
 		free(tlv->data);
@@ -49,7 +49,7 @@ LIBIMOBILEDEVICE_GLUE_API void tlv_buf_free(tlv_buf_t tlv)
 	}
 }
 
-LIBIMOBILEDEVICE_GLUE_API void tlv_buf_append(tlv_buf_t tlv, uint8_t tag, unsigned int length, void* data)
+void tlv_buf_append(tlv_buf_t tlv, uint8_t tag, unsigned int length, void* data)
 {
 	if (!tlv || !tlv->data) {
 		return;
@@ -86,7 +86,7 @@ LIBIMOBILEDEVICE_GLUE_API void tlv_buf_append(tlv_buf_t tlv, uint8_t tag, unsign
 	tlv->length = p - tlv->data;
 }
 
-LIBIMOBILEDEVICE_GLUE_API unsigned char* tlv_get_data_ptr(const void* tlv_data, void* tlv_end, uint8_t tag, uint8_t* length)
+unsigned char* tlv_get_data_ptr(const void* tlv_data, void* tlv_end, uint8_t tag, uint8_t* length)
 {
 	unsigned char* p = (unsigned char*)tlv_data;
 	unsigned char* end = (unsigned char*)tlv_end;
@@ -102,7 +102,7 @@ LIBIMOBILEDEVICE_GLUE_API unsigned char* tlv_get_data_ptr(const void* tlv_data, 
 	return NULL;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int tlv_data_get_uint(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint64_t* value)
+int tlv_data_get_uint(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint64_t* value)
 {
 	if (!tlv_data || tlv_length < 2 || !value) {
 		return 0;
@@ -136,7 +136,7 @@ LIBIMOBILEDEVICE_GLUE_API int tlv_data_get_uint(const void* tlv_data, unsigned i
 	return 1;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int tlv_data_get_uint8(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint8_t* value)
+int tlv_data_get_uint8(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint8_t* value)
 {
 	if (!tlv_data || tlv_length < 2 || !value) {
 		return 0;
@@ -156,7 +156,7 @@ LIBIMOBILEDEVICE_GLUE_API int tlv_data_get_uint8(const void* tlv_data, unsigned 
 	return 1;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int tlv_data_copy_data(const void* tlv_data, unsigned int tlv_length, uint8_t tag, void** out, unsigned int* out_len)
+int tlv_data_copy_data(const void* tlv_data, unsigned int tlv_length, uint8_t tag, void** out, unsigned int* out_len)
 {
 	if (!tlv_data || tlv_length < 2 || !out || !out_len) {
 		return 0;

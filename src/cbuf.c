@@ -30,7 +30,7 @@
 #include "common.h"
 #include "libimobiledevice-glue/cbuf.h"
 
-LIBIMOBILEDEVICE_GLUE_API struct char_buf* char_buf_new()
+struct char_buf* char_buf_new()
 {
 	struct char_buf* cbuf = (struct char_buf*)malloc(sizeof(struct char_buf));
 	cbuf->capacity = 256;
@@ -39,7 +39,7 @@ LIBIMOBILEDEVICE_GLUE_API struct char_buf* char_buf_new()
 	return cbuf;
 }
 
-LIBIMOBILEDEVICE_GLUE_API void char_buf_free(struct char_buf* cbuf)
+void char_buf_free(struct char_buf* cbuf)
 {
 	if (cbuf) {
 		free(cbuf->data);
@@ -47,7 +47,7 @@ LIBIMOBILEDEVICE_GLUE_API void char_buf_free(struct char_buf* cbuf)
 	}
 }
 
-LIBIMOBILEDEVICE_GLUE_API void char_buf_append(struct char_buf* cbuf, unsigned int length, unsigned char* data)
+void char_buf_append(struct char_buf* cbuf, unsigned int length, unsigned char* data)
 {
 	if (!cbuf || !cbuf->data) {
 		return;

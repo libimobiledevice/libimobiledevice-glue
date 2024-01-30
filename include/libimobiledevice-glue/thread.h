@@ -67,13 +67,13 @@ typedef pthread_once_t thread_once_t;
 
 typedef void* (*thread_func_t)(void* data);
 
-int thread_new(THREAD_T* thread, thread_func_t thread_func, void* data);
-void thread_detach(THREAD_T thread);
-void thread_free(THREAD_T thread);
-int thread_join(THREAD_T thread);
-int thread_alive(THREAD_T thread);
+LIMD_GLUE_API int thread_new(THREAD_T* thread, thread_func_t thread_func, void* data);
+LIMD_GLUE_API void thread_detach(THREAD_T thread);
+LIMD_GLUE_API void thread_free(THREAD_T thread);
+LIMD_GLUE_API int thread_join(THREAD_T thread);
+LIMD_GLUE_API int thread_alive(THREAD_T thread);
 
-int thread_cancel(THREAD_T thread);
+LIMD_GLUE_API int thread_cancel(THREAD_T thread);
 
 #ifdef WIN32
 #undef HAVE_THREAD_CLEANUP
@@ -85,17 +85,17 @@ int thread_cancel(THREAD_T thread);
 #endif
 #endif
 
-void mutex_init(mutex_t* mutex);
-void mutex_destroy(mutex_t* mutex);
-void mutex_lock(mutex_t* mutex);
-void mutex_unlock(mutex_t* mutex);
+LIMD_GLUE_API void mutex_init(mutex_t* mutex);
+LIMD_GLUE_API void mutex_destroy(mutex_t* mutex);
+LIMD_GLUE_API void mutex_lock(mutex_t* mutex);
+LIMD_GLUE_API void mutex_unlock(mutex_t* mutex);
 
-void thread_once(thread_once_t *once_control, void (*init_routine)(void));
+LIMD_GLUE_API void thread_once(thread_once_t *once_control, void (*init_routine)(void));
 
-void cond_init(cond_t* cond);
-void cond_destroy(cond_t* cond);
-int cond_signal(cond_t* cond);
-int cond_wait(cond_t* cond, mutex_t* mutex);
-int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms);
+LIMD_GLUE_API void cond_init(cond_t* cond);
+LIMD_GLUE_API void cond_destroy(cond_t* cond);
+LIMD_GLUE_API int cond_signal(cond_t* cond);
+LIMD_GLUE_API int cond_wait(cond_t* cond, mutex_t* mutex);
+LIMD_GLUE_API int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms);
 
 #endif

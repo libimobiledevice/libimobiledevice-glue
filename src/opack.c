@@ -237,7 +237,7 @@ static void opack_encode_node(plist_t node, struct char_buf* cbuf)
 	}
 }
 
-LIBIMOBILEDEVICE_GLUE_API void opack_encode_from_plist(plist_t plist, unsigned char** out, unsigned int* out_len)
+void opack_encode_from_plist(plist_t plist, unsigned char** out, unsigned int* out_len)
 {
 	if (!plist || !out || !out_len) {
 		return;
@@ -462,7 +462,7 @@ static int opack_decode_obj(unsigned char** p, unsigned char* end, plist_t* plis
 	return 0;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int opack_decode_to_plist(unsigned char* buf, unsigned int buf_len, plist_t* plist_out)
+int opack_decode_to_plist(unsigned char* buf, unsigned int buf_len, plist_t* plist_out)
 {
 	if (!buf || buf_len == 0 || !plist_out) {
 		return -1;

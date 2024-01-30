@@ -25,23 +25,20 @@
 #ifndef __UTILS_H
 #define __UTILS_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
+#include <libimobiledevice-glue/glue.h>
 
 #define MAC_EPOCH 978307200
 
-char *string_concat(const char *str, ...);
-char *string_append(char *str, ...);
-char *string_build_path(const char *elem, ...);
-char *string_format_size(uint64_t size);
-char *string_toupper(char *str);
-char *generate_uuid(void);
+LIMD_GLUE_API char *string_concat(const char *str, ...);
+LIMD_GLUE_API char *string_append(char *str, ...);
+LIMD_GLUE_API char *string_build_path(const char *elem, ...);
+LIMD_GLUE_API char *string_format_size(uint64_t size);
+LIMD_GLUE_API char *string_toupper(char *str);
+LIMD_GLUE_API char *generate_uuid(void);
 
-int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length);
-int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length);
+LIMD_GLUE_API int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length);
+LIMD_GLUE_API int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length);
 
 #endif

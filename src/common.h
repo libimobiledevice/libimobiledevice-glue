@@ -25,14 +25,18 @@
 #include <config.h>
 #endif
 
-#ifdef WIN32
-#define LIBIMOBILEDEVICE_GLUE_API __declspec( dllexport )
+#ifdef LIMD_GLUE_STATIC
+  #define LIMD_GLUE_API
+#elif defined(_WIN32)
+  #define LIMD_GLUE_API __declspec( dllexport )
 #else
-#ifdef HAVE_FVISIBILITY
-#define LIBIMOBILEDEVICE_GLUE_API __attribute__((visibility("default")))
-#else
-#define LIBIMOBILEDEVICE_GLUE_API
+  #if __GNUC__ >= 4
+    #define LIMD_GLUE_API __attribute__((visibility("default")))
+  #else
+    #define LIMD_GLUE_API
+  #endif
 #endif
-#endif
+
+#include "libimobiledevice-glue/glue.h"
 
 #endif
