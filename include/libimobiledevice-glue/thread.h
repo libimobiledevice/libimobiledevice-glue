@@ -23,6 +23,7 @@
 #define __THREAD_H
 
 #include <stddef.h>
+#include <libimobiledevice-glue/glue.h>
 
 #ifdef WIN32
 typedef void* HANDLE;
