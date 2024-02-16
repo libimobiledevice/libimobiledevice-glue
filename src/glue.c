@@ -78,3 +78,11 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, LPVOID lpReserved)
 #else
 #warning No compiler support for constructor/destructor attributes, some features might not be available.
 #endif
+
+const char* libimobiledevice_glue_version()
+{
+#ifndef PACKAGE_VERSION
+#error PACKAGE_VERSION is not defined!
+#endif
+    return PACKAGE_VERSION;
+}

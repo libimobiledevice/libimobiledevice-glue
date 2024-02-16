@@ -32,4 +32,6 @@
   #endif
 #endif
 
+LIMD_GLUE_API const char* libimobiledevice_glue_version();
+
 #endif
