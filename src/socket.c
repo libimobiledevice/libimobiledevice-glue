@@ -432,9 +432,6 @@ int socket_create(const char* addr, uint16_t port)
 
 	sprintf(portstr, "%d", port);
 
-	if (!addr) {
-		addr = "localhost";
-	}
 	res = getaddrinfo(addr, portstr, &hints, &result);
 	if (res != 0) {
 		fprintf(stderr, "%s: getaddrinfo: %s\n", __func__, gai_strerror(res));
@@ -1120,11 +1117,6 @@ int socket_connect(const char *addr, uint16_t port)
 #else
 	int flags = 0;
 #endif
-
-	if (!addr) {
-		errno = EINVAL;
-		return -1;
-	}
 
 	memset(&hints, '\0', sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
