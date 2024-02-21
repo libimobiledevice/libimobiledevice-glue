@@ -5,6 +5,21 @@ Library with common code used by the libraries and tools around the
 
 ![](https://github.com/libimobiledevice/libimobiledevice-glue/workflows/build/badge.svg)
 
+## Table of Contents
+- [Features](#features)
+- [Building](#building)
+  - [Prerequisites](#prerequisites)
+    - [Linux (Debian/Ubuntu based)](#linux-debianubuntu-based)
+    - [macOS](#macos)
+    - [Windows](#windows)
+  - [Configuring the source tree](#configuring-the-source-tree)
+  - [Building and installation](#building-and-installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Links](#links)
+- [License](#license)
+- [Credits](#credits)
+
 ## Features
 
 The main functionality provided by this library are **socket** helper
@@ -25,15 +40,6 @@ Tested on Linux, macOS, and Windows.
 
 ## Building
 
-### Quick access
-
-* [Prerequisites](#prerequisites)
-  * [Linux (Debian/Ubuntu based)](#linux-debianubuntu-based)
-  * [macOS](#macos)
-  * [Windows](#windows)
-* [Configuring the source tree](#configuring-the-source-tree)
-* [Building and installation](#building-and-installation)
-
 ### Prerequisites
 
 You need to have a working compiler (gcc/clang) and development environent
@@ -45,9 +51,9 @@ libimobiledevice-glue requires [libplist](https://github.com/libimobiledevice/li
 Check the [Building](https://github.com/libimobiledevice/libplist?tab=readme-ov-file#building)
 section of the README on how to build it. Note that some platforms might have it as a package.
 
-* #### Linux (Debian/Ubuntu based)
+#### Linux (Debian/Ubuntu based)
 
-  Install all required dependencies and build tools:
+* Install all required dependencies and build tools:
   ```shell
   sudo apt-get install \
   	build-essential \
@@ -62,9 +68,9 @@ section of the README on how to build it. Note that some platforms might have it
 
   In case libplist-dev is not available, you can manually build and install it. See note above.
 
-* #### macOS
+#### macOS
 
-  Make sure the Xcode command line tools are installed. Then, use either [MacPorts](https://www.macports.org/)
+* Make sure the Xcode command line tools are installed. Then, use either [MacPorts](https://www.macports.org/)
   or [Homebrew](https://brew.sh/) to install `automake`, `autoconf`, `libtool`, etc.
 
   Using MacPorts:
@@ -77,9 +83,9 @@ section of the README on how to build it. Note that some platforms might have it
   brew install libtool autoconf automake pkg-config
   ```
 
-* #### Windows
+#### Windows
 
-  Using [MSYS2](https://www.msys2.org/) is the official way of compiling this project on Windows. Download the MSYS2 installer
+* Using [MSYS2](https://www.msys2.org/) is the official way of compiling this project on Windows. Download the MSYS2 installer
   and follow the installation steps.
 
   It is recommended to use the _MSYS2 MinGW 64-bit_ shell. Run it and make sure the required dependencies are installed:
@@ -108,7 +114,7 @@ accordingly. Make sure to use a path with the same prefix as the dependencies. I
 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 ```
 
-* #### From git
+* **From git**
 
   If you haven't done already, clone the actual project repository and change into the directory.
   ```shell
@@ -121,7 +127,7 @@ export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
   ./autogen.sh
   ```
 
-* #### From release tarball (.tar.bz2)
+* **From release tarball (.tar.bz2)**
 
   When using an official [release tarball](https://github.com/libimobiledevice/libimobiledevice-glue/releases) (`libimobiledevice-glue-x.y.z.tar.bz2`)
   the procedure is slightly different.
@@ -152,7 +158,6 @@ Once the command is successful, the last few lines of output will look like this
 ```
 [...]
 config.status: creating config.h
-config.status: config.h is unchanged
 config.status: executing depfiles commands
 config.status: executing libtool commands
 
@@ -174,9 +179,9 @@ you are ready to build the project. This is simply done with
 make
 ```
 
-If no errors are emitted you are ready to install. Depending on if the current
-user has permissions to write to the destination directory or not, you would
-either run
+If no errors are emitted you are ready for installation. Depending on whether
+the current user has permissions to write to the destination directory or not,
+you would either run
 ```shell
 make install
 ```
@@ -222,7 +227,7 @@ Please make sure your contribution adheres to:
 
 ## License
 
-This library and utilities are licensed under the [GNU Lesser General Public License v2.1](https://www.gnu.org/licenses/lgpl-2.1.en.html),
+This library is licensed under the [GNU Lesser General Public License v2.1](https://www.gnu.org/licenses/lgpl-2.1.en.html),
 also included in the repository in the `COPYING` file.
 
 ## Credits
@@ -230,7 +235,8 @@ also included in the repository in the `COPYING` file.
 Apple, iPhone, iPad, iPod, iPod Touch, Apple TV, Apple Watch, Mac, iOS,
 iPadOS, tvOS, watchOS, and macOS are trademarks of Apple Inc.
 
-This project is an independent software and has not been authorized, sponsored,
-or otherwise approved by Apple Inc.
+This project is an independent software library and has not been authorized,
+sponsored, or otherwise approved by Apple Inc.
 
-README Updated on: 2024-02-17
+README Updated on: 2024-02-21
+
