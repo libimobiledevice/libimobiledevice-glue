@@ -1,3 +1,16 @@
+Version 1.1.0
+~~~~~~~~~~~~~
+
+- Changes:
+  * socket: Use poll() - when available - instead of select()
+  * socket: Allow NULL as address for socket_create() and socket_connect()
+  * win32: Remove windows.h from public headers
+  * Add version function to interface
+
+- Bugfixes:
+  * opack: Fixed 32bit buffer overflow
+  * opack: Fix parsing of 32 and 64 bit packed values
+
 Version 1.0.0
 ~~~~~~~~~~~~~
 
