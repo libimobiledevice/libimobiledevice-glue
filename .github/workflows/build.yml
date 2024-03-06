@@ -30,7 +30,7 @@ jobs:
           done
           sudo cp -r extract/* /
           sudo ldconfig
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: autogen
       run: ./autogen.sh PKG_CONFIG_PATH=/usr/local/lib/pkgconfig LDFLAGS="-Wl,-rpath=/usr/local/lib"
     - name: make
@@ -43,7 +43,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: libimobiledevice-glue-latest_${{env.target_triplet}}
         path: libimobiledevice-glue.tar
@@ -72,7 +72,7 @@ jobs:
             tar -C extract -xvf $I
           done
           sudo cp -r extract/* /
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: autogen
       run: |
           SDKDIR=`xcrun --sdk macosx --show-sdk-path`
@@ -96,7 +96,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: libimobiledevice-glue-latest_macOS
         path: libimobiledevice-glue.tar
@@ -145,7 +145,7 @@ jobs:
             tar -C extract -xvf $I
           done
           cp -r extract/* /
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: autogen
       run: ./autogen.sh CC=gcc CXX=g++
     - name: make
@@ -158,7 +158,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar ${{ env.dest }}
     - name: publish artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: libimobiledevice-glue-latest_${{ matrix.arch }}-${{ env.dest }}
         path: libimobiledevice-glue.tar
