@@ -1,3 +1,12 @@
+Version 1.2.0
+~~~~~~~~~~~~~
+
+- Changes:
+  * Add helper code to deal with NSKeyedArchiver plist data
+
+- Bugfixes:
+  * socket: Make sure errno is always set on error, and always return a meaningful error code
+
 Version 1.1.0
 ~~~~~~~~~~~~~
 
