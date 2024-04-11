@@ -55,7 +55,7 @@ static int wsa_init = 0;
 #ifdef AF_INET6
 #include <net/if.h>
 #include <ifaddrs.h>
-#if defined (__APPLE__) || defined (__FreeBSD__)
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__HAIKU__)
 #include <net/if_dl.h>
 #endif
 #ifdef __linux__
@@ -894,13 +894,13 @@ int get_primary_mac_address(unsigned char mac_addr_buf[6])
 			if (ifa->ifa_flags & IFF_LOOPBACK) {
 				continue;
 			}
-#if defined(__APPLE__) || defined (__FreeBSD__)
+#if defined(__APPLE__) || defined (__FreeBSD__) || defined (__HAIKU__)
 			if (ifa->ifa_addr->sa_family != AF_LINK) {
 				continue;
 			}
 #if defined (__APPLE__)
 			if (!strcmp(ifa->ifa_name, "en0")) {
-#elif defined (__FreeBSD__)
+#elif defined (__FreeBSD__) || defined (__HAIKU__)
 			{
 #endif
 				memcpy(mac_addr_buf, (unsigned char *)LLADDR((struct sockaddr_dl *)(ifa)->ifa_addr), 6);
@@ -973,10 +973,12 @@ static int32_t _sockaddr_in6_scope_id(struct sockaddr_in6* addr)
 			continue;
 		}
 
+#ifndef __HAIKU__
 		/* skip if not running */
 		if ((ifa->ifa_flags & IFF_RUNNING) == 0) {
 			continue;
 		}
+#endif
 
 		struct sockaddr_in6* addr_in = (struct sockaddr_in6*)ifa->ifa_addr;
 
