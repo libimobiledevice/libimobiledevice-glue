@@ -463,6 +463,7 @@ int socket_create(const char* addr, uint16_t port)
 {
 	int sfd = -1;
 	int yes = 1;
+	int no = 0;
 	struct addrinfo hints;
 	struct addrinfo *result, *rp;
 	char portstr[8];
@@ -514,7 +515,7 @@ int socket_create(const char* addr, uint16_t port)
 
 #if defined(AF_INET6) && defined(IPV6_V6ONLY)
 		if (rp->ai_family == AF_INET6) {
-			if (setsockopt(sfd, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&yes, sizeof(int)) == -1) {
+			if (setsockopt(sfd, IPPROTO_IPV6, IPV6_V6ONLY, (addr) ? (void*)&yes : (void*)&no, sizeof(int)) == -1) {
 				perror("setsockopt() IPV6_V6ONLY");
 			}
 		}
