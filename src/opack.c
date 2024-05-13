@@ -199,7 +199,7 @@ static void opack_encode_node(plist_t node, struct char_buf* cbuf)
 		}	break;
 		case PLIST_DATA: {
 			uint64_t len = 0;
-			const uint8_t* data = plist_get_data_ptr(node, &len);
+			const char* data = plist_get_data_ptr(node, &len);
 			if (len > 0x20) {
 				if (len > 0xFF) {
 					if (len > 0xFFFF) {
@@ -379,7 +379,7 @@ static int opack_decode_obj(unsigned char** p, unsigned char* end, plist_t* plis
 			*p = end;
 			return -1;
 		}
-		*plist_out = plist_new_data(*p, dlen);
+		*plist_out = plist_new_data((const char*)*p, dlen);
 		(*p)+=dlen;
 	} else if (type >= 0xE0 && type <= 0xEF) {
 		/* dictionary */
