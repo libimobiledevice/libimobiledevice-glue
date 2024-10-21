@@ -669,7 +669,7 @@ static int getifaddrs(struct ifaddrs** ifap)
 			}
 
 			if (!ifa) {
-				ifa = malloc(sizeof(struct ifaddrs));
+				ifa = calloc(1, sizeof(struct ifaddrs));
 				if (!ifa) {
 					errno = ENOMEM;
 					free(pAddresses);
@@ -678,7 +678,7 @@ static int getifaddrs(struct ifaddrs** ifap)
 				*ifap = ifa;
 				ifa->ifa_next = NULL;
 			} else {
-				struct ifaddrs* ifanew = malloc(sizeof(struct ifaddrs));
+				struct ifaddrs* ifanew = calloc(1, sizeof(struct ifaddrs));
 				if (!ifanew) {
 					freeifaddrs(*ifap);
 					free(pAddresses);
@@ -708,8 +708,7 @@ static int getifaddrs(struct ifaddrs** ifap)
 			memcpy(ifa->ifa_addr, unicast->Address.lpSockaddr, unicast->Address.iSockaddrLength);
 
 			/* netmask */
-			ifa->ifa_netmask = (struct sockaddr*)malloc(sizeof(struct sockaddr_storage));
-			memset(ifa->ifa_netmask, 0, sizeof(struct sockaddr_storage));
+			ifa->ifa_netmask = (struct sockaddr*)calloc(1, sizeof(struct sockaddr_storage));
 
 			/* store mac address */
 			if (adapter->PhysicalAddressLength == 6) {
