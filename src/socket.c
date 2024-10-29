@@ -83,6 +83,10 @@ static int wsa_init = 0;
 #define ETIMEDOUT 138
 #endif
 
+#ifndef AI_NUMERICSERV
+#define AI_NUMERICSERV 0
+#endif
+
 static int verbose = 0;
 
 void socket_set_verbose(int level)
