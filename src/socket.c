@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
@@ -96,7 +96,7 @@ void socket_set_verbose(int level)
 
 const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	WSADATA wsa_data;
 	if (!wsa_init) {
 		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
@@ -154,7 +154,7 @@ enum poll_status
 	poll_status_error
 };
 
-#ifdef WIN32
+#ifdef _WIN32
 static inline __attribute__((always_inline)) int WSAError_to_errno(int wsaerr)
 {
 	switch (wsaerr) {
@@ -325,7 +325,7 @@ static inline __attribute__((always_inline)) enum poll_status poll_wrapper(int f
 #endif
 }
 
-#ifndef WIN32
+#ifndef _WIN32
 int socket_create_unix(const char *filename)
 {
 	struct sockaddr_un name;
@@ -472,7 +472,7 @@ int socket_create(const char* addr, uint16_t port)
 	struct addrinfo *result, *rp;
 	char portstr[8];
 	int res;
-#ifdef WIN32
+#ifdef _WIN32
 	WSADATA wsa_data;
 	if (!wsa_init) {
 		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
@@ -579,7 +579,7 @@ static uint32_t _in6_addr_scope(struct in6_addr* addr)
 }
 
 #ifndef HAVE_GETIFADDRS
-#ifdef WIN32
+#ifdef _WIN32
 
 struct ifaddrs {
 	struct ifaddrs  *ifa_next;    /* Next item in list */
@@ -1028,7 +1028,7 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 	int yes = 1;
 	int bufsize = 0x20000;
 	int addrlen = 0;
-#ifdef WIN32
+#ifdef _WIN32
 	u_long l_yes = 1;
 	WSADATA wsa_data;
 	if (!wsa_init) {
@@ -1089,7 +1089,7 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 		return -1;
 	}
 
-#ifdef WIN32
+#ifdef _WIN32
 	ioctlsocket(sfd, FIONBIO, &l_yes);
 #else
 	int flags = fcntl(sfd, F_GETFL, 0);
@@ -1100,7 +1100,7 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 		if (connect(sfd, addr, addrlen) != -1) {
 			break;
 		}
-#ifdef WIN32
+#ifdef _WIN32
 		if (WSAGetLastError() == WSAEWOULDBLOCK)
 #else
 		if (errno == EINPROGRESS)
@@ -1114,7 +1114,7 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 					errno = 0;
 					break;
 				}
-#ifdef WIN32
+#ifdef _WIN32
 				so_error = WSAError_to_errno(so_error);
 #endif
 				errno = so_error;
@@ -1123,7 +1123,7 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
 				if (so_error != 0) {
-#ifdef WIN32
+#ifdef _WIN32
 					so_error = WSAError_to_errno(so_error);
 #endif
 					errno = so_error;
@@ -1167,7 +1167,7 @@ int socket_connect(const char *addr, uint16_t port)
 	struct addrinfo *result, *rp;
 	char portstr[8];
 	int res;
-#ifdef WIN32
+#ifdef _WIN32
 	u_long l_yes = 1;
 	WSADATA wsa_data;
 	if (!wsa_init) {
@@ -1215,7 +1215,7 @@ int socket_connect(const char *addr, uint16_t port)
 			continue;
 		}
 
-#ifdef WIN32
+#ifdef _WIN32
 		ioctlsocket(sfd, FIONBIO, &l_yes);
 #else
 		flags = fcntl(sfd, F_GETFL, 0);
@@ -1225,7 +1225,7 @@ int socket_connect(const char *addr, uint16_t port)
 		if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1) {
 			break;
 		}
-#ifdef WIN32
+#ifdef _WIN32
 		if (WSAGetLastError() == WSAEWOULDBLOCK)
 #else
 		if (errno == EINPROGRESS)
@@ -1239,7 +1239,7 @@ int socket_connect(const char *addr, uint16_t port)
 					errno = 0;
 					break;
 				}
-#ifdef WIN32
+#ifdef _WIN32
 				so_error = WSAError_to_errno(so_error);
 #endif
 				errno = so_error;
@@ -1248,7 +1248,7 @@ int socket_connect(const char *addr, uint16_t port)
 				socklen_t len = sizeof(so_error);
 				getsockopt(sfd, SOL_SOCKET, SO_ERROR, (void*)&so_error, &len);
 				if (so_error != 0) {
-#ifdef WIN32
+#ifdef _WIN32
 					so_error = WSAError_to_errno(so_error);
 #endif
 					errno = so_error;
@@ -1315,7 +1315,7 @@ int socket_check_fd(int fd, fd_mode fdm, unsigned int timeout)
 
 int socket_accept(int fd, uint16_t port)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	int addr_len;
 #else
 	socklen_t addr_len;
@@ -1335,7 +1335,7 @@ int socket_shutdown(int fd, int how)
 }
 
 int socket_close(int fd) {
-#ifdef WIN32
+#ifdef _WIN32
 	return closesocket(fd);
 #else
 	return close(fd);
@@ -1371,7 +1371,7 @@ int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigne
 		return -ECONNRESET;
 	}
 	if (result < 0) {
-#ifdef WIN32
+#ifdef _WIN32
 		errno = WSAError_to_errno(WSAGetLastError());
 #endif
 		return -errno;
@@ -1391,7 +1391,7 @@ int socket_send(int fd, void *data, size_t length)
 #endif
 	int s = (int)send(fd, data, length, flags);
 	if (s < 0) {
-#ifdef WIN32
+#ifdef _WIN32
 		errno = WSAError_to_errno(WSAGetLastError());
 #endif
 		return -errno;
@@ -1401,7 +1401,7 @@ int socket_send(int fd, void *data, size_t length)
 
 int socket_get_socket_port(int fd, uint16_t *port)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	int addr_len;
 #else
 	socklen_t addr_len;

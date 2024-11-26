@@ -22,7 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 #include "common.h"
@@ -30,7 +30,7 @@
 
 int thread_new(THREAD_T *thread, thread_func_t thread_func, void* data)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	HANDLE th = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)(void*)thread_func, data, 0, NULL);
 	if (th == NULL) {
 		return -1;
@@ -45,7 +45,7 @@ int thread_new(THREAD_T *thread, thread_func_t thread_func, void* data)
 
 void thread_detach(THREAD_T thread)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	CloseHandle(thread);
 #else
 	pthread_detach(thread);
@@ -54,7 +54,7 @@ void thread_detach(THREAD_T thread)
 
 void thread_free(THREAD_T thread)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	CloseHandle(thread);
 #endif
 }
@@ -62,7 +62,7 @@ void thread_free(THREAD_T thread)
 int thread_join(THREAD_T thread)
 {
 	/* wait for thread to complete */
-#ifdef WIN32
+#ifdef _WIN32
 	return (int)WaitForSingleObject(thread, INFINITE);
 #else
 	return pthread_join(thread, NULL);
@@ -73,7 +73,7 @@ int thread_alive(THREAD_T thread)
 {
 	if (!thread)
 		return 0;
-#ifdef WIN32
+#ifdef _WIN32
 	return WaitForSingleObject(thread, 0) == WAIT_TIMEOUT;
 #else
 	return pthread_kill(thread, 0) == 0;
@@ -82,7 +82,7 @@ int thread_alive(THREAD_T thread)
 
 int thread_cancel(THREAD_T thread)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	return -1;
 #else
 #ifdef HAVE_PTHREAD_CANCEL
@@ -95,7 +95,7 @@ int thread_cancel(THREAD_T thread)
 
 void mutex_init(mutex_t* mutex)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	InitializeCriticalSection((LPCRITICAL_SECTION)mutex);
 #else
 	pthread_mutex_init(mutex, NULL);
@@ -104,7 +104,7 @@ void mutex_init(mutex_t* mutex)
 
 void mutex_destroy(mutex_t* mutex)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	DeleteCriticalSection((LPCRITICAL_SECTION)mutex);
 #else
 	pthread_mutex_destroy(mutex);
@@ -113,7 +113,7 @@ void mutex_destroy(mutex_t* mutex)
 
 void mutex_lock(mutex_t* mutex)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	EnterCriticalSection((LPCRITICAL_SECTION)mutex);
 #else
 	pthread_mutex_lock(mutex);
@@ -122,7 +122,7 @@ void mutex_lock(mutex_t* mutex)
 
 void mutex_unlock(mutex_t* mutex)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	LeaveCriticalSection((LPCRITICAL_SECTION)mutex);
 #else
 	pthread_mutex_unlock(mutex);
@@ -131,7 +131,7 @@ void mutex_unlock(mutex_t* mutex)
 
 void thread_once(thread_once_t *once_control, void (*init_routine)(void))
 {
-#ifdef WIN32
+#ifdef _WIN32
 	while (InterlockedExchange(&(once_control->lock), 1) != 0) {
 		Sleep(1);
 	}
@@ -147,7 +147,7 @@ void thread_once(thread_once_t *once_control, void (*init_routine)(void))
 
 void cond_init(cond_t* cond)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	cond->sem = CreateSemaphore(NULL, 0, 32767, NULL);
 #else
 	pthread_cond_init(cond, NULL);
@@ -156,7 +156,7 @@ void cond_init(cond_t* cond)
 
 void cond_destroy(cond_t* cond)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	CloseHandle(cond->sem);
 #else
 	pthread_cond_destroy(cond);
@@ -165,7 +165,7 @@ void cond_destroy(cond_t* cond)
 
 int cond_signal(cond_t* cond)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	int result = 0;
 	if (!ReleaseSemaphore(cond->sem, 1, NULL)) {
 		result = -1;
@@ -178,7 +178,7 @@ int cond_signal(cond_t* cond)
 
 int cond_wait(cond_t* cond, mutex_t* mutex)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	mutex_unlock(mutex);
 	DWORD res = WaitForSingleObject(cond->sem, INFINITE);
 	switch (res) {
@@ -194,7 +194,7 @@ int cond_wait(cond_t* cond, mutex_t* mutex)
 
 int cond_wait_timeout(cond_t* cond, mutex_t* mutex, unsigned int timeout_ms)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	mutex_unlock(mutex);
 	DWORD res = WaitForSingleObject(cond->sem, timeout_ms);
 	switch (res) {

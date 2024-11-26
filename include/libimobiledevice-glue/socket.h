@@ -32,7 +32,7 @@ enum fd_mode {
 };
 typedef enum fd_mode fd_mode;
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <winsock2.h>
 #define SHUT_RD SD_READ
 #define SHUT_WR SD_WRITE
@@ -43,7 +43,7 @@ typedef enum fd_mode fd_mode;
 
 #include <libimobiledevice-glue/glue.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 LIMD_GLUE_API int socket_create_unix(const char *filename);
 LIMD_GLUE_API int socket_connect_unix(const char *filename);
 #endif
