@@ -12,7 +12,7 @@
 #include "common.h"
 #include "libimobiledevice-glue/sha.h"
 
-#include "fixedint.h"
+#include <stdint.h>
 
 /* the K array */
 static const uint32_t K[64] = {

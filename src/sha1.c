@@ -12,7 +12,7 @@
 #include "common.h"
 #include "libimobiledevice-glue/sha.h"
 
-#include "fixedint.h"
+#include <stdint.h>
 
 #define ROLc(x, y) \
      ( (((unsigned long)(x)<<(unsigned long)((y)&31)) | \

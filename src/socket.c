@@ -26,10 +26,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
+#ifndef _MSC_VER
+#include <unistd.h>
 #include <sys/time.h>
 #include <sys/stat.h>
+#endif
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -154,8 +156,14 @@ enum poll_status
 	poll_status_error
 };
 
+#ifdef _MSC_VER
+#define ALWAYS_INLINE __forceinline
+#else
+#define ALWAYS_INLINE __attribute__((always_inline))
+#endif
+
 #ifdef _WIN32
-static inline __attribute__((always_inline)) int WSAError_to_errno(int wsaerr)
+static ALWAYS_INLINE int WSAError_to_errno(int wsaerr)
 {
 	switch (wsaerr) {
 		case WSAEINVAL:
@@ -200,7 +208,7 @@ static inline __attribute__((always_inline)) int WSAError_to_errno(int wsaerr)
 #endif
 
 // timeout of -1 means infinity
-static inline __attribute__((always_inline)) enum poll_status poll_wrapper(int fd, fd_mode mode, int timeout)
+static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int timeout)
 {
 #ifdef HAVE_POLL
 	// https://man7.org/linux/man-pages/man2/select.2.html

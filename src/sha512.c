@@ -9,7 +9,7 @@
  * Tom St Denis, tomstdenis@gmail.com, http://libtom.org
  */
 
-#include "fixedint.h"
+#include <stdint.h>
 
 #include "common.h"
 #include "libimobiledevice-glue/sha.h"

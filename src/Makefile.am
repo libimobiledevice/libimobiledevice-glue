@@ -21,7 +21,6 @@ libimobiledevice_glue_1_0_la_SOURCES =	\
 	sha1.c          \
 	sha256.c        \
 	sha512.c        \
-	fixedint.h      \
 	common.h
 
 if WIN32

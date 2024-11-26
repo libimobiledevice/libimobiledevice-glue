@@ -57,9 +57,9 @@ LIMD_GLUE_API void nskeyedarchive_free(nskeyedarchive_t ka);
 
 LIMD_GLUE_API void nskeyedarchive_set_top_ref_key_name(nskeyedarchive_t ka, const char* keyname);
 
-LIMD_GLUE_API uint64_t nskeyedarchive_add_top_class(nskeyedarchive_t ka, const char* classname, ...) __attribute__ ((sentinel(0)));
+LIMD_GLUE_API uint64_t nskeyedarchive_add_top_class(nskeyedarchive_t ka, const char* classname, ...);
 LIMD_GLUE_API void nskeyedarchive_add_top_class_uid(nskeyedarchive_t ka, uint64_t uid);
-LIMD_GLUE_API void nskeyedarchive_append_class(nskeyedarchive_t ka, const char* classname, ...) __attribute__ ((sentinel(0)));
+LIMD_GLUE_API void nskeyedarchive_append_class(nskeyedarchive_t ka, const char* classname, ...);
 LIMD_GLUE_API void nskeyedarchive_append_object(nskeyedarchive_t ka, plist_t object);
 
 LIMD_GLUE_API void nskeyedarchive_nsarray_append_item(nskeyedarchive_t ka, uint64_t uid, enum nskeyedarchive_class_type_t type, ...);

@@ -30,7 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifndef _MSC_VER
 #include <sys/time.h>
+#endif
 #include <inttypes.h>
 #include <ctype.h>
 #include <errno.h>
