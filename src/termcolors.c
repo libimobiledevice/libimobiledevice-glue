@@ -182,7 +182,7 @@ int cvfprintf(FILE* stream, const char* fmt, va_list vargs)
 		char* end = start + len + 1;
 		while (p < end-1) {
 			char* cur = p;
-			if (*p == '\e' && end-p > 2 && *(p+1) == '[') {
+			if (*p == '\x1b' && end-p > 2 && *(p+1) == '[') {
 				p+=2;
 				if (*p == 'm') {
 #ifdef _WIN32
