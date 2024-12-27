@@ -6,6 +6,10 @@
 
 #include <libimobiledevice-glue/glue.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* LibTomCrypt, modular cryptographic library -- Tom St Denis
  *
  * LibTomCrypt is a library that provides various cryptographic
@@ -82,5 +86,9 @@ LIMD_GLUE_API int sha384_init(sha384_context * md);
 LIMD_GLUE_API int sha384_final(sha384_context * md, unsigned char *out);
 LIMD_GLUE_API int sha384_update(sha384_context * md, const void *data, size_t inlen);
 LIMD_GLUE_API int sha384(const unsigned char *message, size_t message_len, unsigned char *out);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

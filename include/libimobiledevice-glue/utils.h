@@ -31,6 +31,10 @@
 
 #define MAC_EPOCH 978307200
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API char *string_concat(const char *str, ...);
 LIMD_GLUE_API char *string_append(char *str, ...);
 LIMD_GLUE_API char *string_build_path(const char *elem, ...);
@@ -40,5 +44,9 @@ LIMD_GLUE_API char *generate_uuid(void);
 
 LIMD_GLUE_API int buffer_read_from_filename(const char *filename, char **buffer, uint64_t *length);
 LIMD_GLUE_API int buffer_write_to_filename(const char *filename, const char *buffer, uint64_t length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

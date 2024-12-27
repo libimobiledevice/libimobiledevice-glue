@@ -24,7 +24,15 @@
 #include <libimobiledevice-glue/glue.h>
 #include <plist/plist.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API void opack_encode_from_plist(plist_t plist, unsigned char** out, unsigned int* out_len);
 LIMD_GLUE_API int opack_decode_to_plist(unsigned char* buf, unsigned int buf_len, plist_t* plist_out);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __OPACK_H */

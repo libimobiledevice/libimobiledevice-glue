@@ -74,6 +74,10 @@
 #define BG_WHITE              "\e[107m"
 #define BG_DEFAULT            "\e[49m"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* automatically called by library constructor */
 LIMD_GLUE_API void term_colors_init();
 
@@ -84,5 +88,9 @@ LIMD_GLUE_API void term_colors_set_enabled(int en);
 LIMD_GLUE_API int cprintf(const char* fmt, ...);
 LIMD_GLUE_API int cfprintf(FILE* stream, const char* fmt, ...);
 LIMD_GLUE_API int cvfprintf(FILE* stream, const char* fmt, va_list vargs);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

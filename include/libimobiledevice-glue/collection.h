@@ -29,6 +29,10 @@ struct collection {
 	int capacity;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API void collection_init(struct collection *col);
 LIMD_GLUE_API void collection_add(struct collection *col, void *element);
 LIMD_GLUE_API int collection_remove(struct collection *col, void *element);
@@ -50,5 +54,9 @@ LIMD_GLUE_API void collection_copy(struct collection *dest, struct collection *s
 #define ENDFOREACH \
 		} \
 	} while(0);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

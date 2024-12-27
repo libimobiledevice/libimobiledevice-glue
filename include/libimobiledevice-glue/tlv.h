@@ -31,6 +31,10 @@ struct tlv_buf {
 };
 typedef struct tlv_buf* tlv_buf_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API tlv_buf_t tlv_buf_new();
 LIMD_GLUE_API void tlv_buf_free(tlv_buf_t tlv);
 
@@ -39,5 +43,9 @@ LIMD_GLUE_API unsigned char* tlv_get_data_ptr(const void* tlv_data, void* tlv_en
 LIMD_GLUE_API int tlv_data_get_uint(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint64_t* value);
 LIMD_GLUE_API int tlv_data_get_uint8(const void* tlv_data, unsigned int tlv_length, uint8_t tag, uint8_t* value);
 LIMD_GLUE_API int tlv_data_copy_data(const void* tlv_data, unsigned int tlv_length, uint8_t tag, void** out, unsigned int* out_len);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __TLV_H */

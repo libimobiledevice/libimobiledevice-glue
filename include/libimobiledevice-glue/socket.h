@@ -43,6 +43,10 @@ typedef enum fd_mode fd_mode;
 
 #include <libimobiledevice-glue/glue.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef _WIN32
 LIMD_GLUE_API int socket_create_unix(const char *filename);
 LIMD_GLUE_API int socket_connect_unix(const char *filename);
@@ -68,5 +72,9 @@ LIMD_GLUE_API void socket_set_verbose(int level);
 LIMD_GLUE_API const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size);
 
 LIMD_GLUE_API int get_primary_mac_address(unsigned char mac_addr_buf[6]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* SOCKET_SOCKET_H */

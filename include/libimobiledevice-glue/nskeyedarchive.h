@@ -50,6 +50,10 @@ enum nskeyedarchive_class_type_t {
 
 typedef struct nskeyedarchive_st *nskeyedarchive_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API nskeyedarchive_t nskeyedarchive_new(void);
 LIMD_GLUE_API nskeyedarchive_t nskeyedarchive_new_from_plist(plist_t plist);
 LIMD_GLUE_API nskeyedarchive_t nskeyedarchive_new_from_data(const void* data, uint32_t size);
@@ -86,5 +90,9 @@ LIMD_GLUE_API int nskeyedarchive_get_class_string_property(nskeyedarchive_t ka, 
 LIMD_GLUE_API int nskeyedarchive_get_class_property(nskeyedarchive_t ka, uint64_t uid, const char* propname, plist_t* value);
 
 LIMD_GLUE_API plist_t nskeyedarchive_to_plist(nskeyedarchive_t ka);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -32,6 +32,14 @@
   #endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API const char* libimobiledevice_glue_version();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

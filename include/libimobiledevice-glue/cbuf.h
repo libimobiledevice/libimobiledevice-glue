@@ -30,8 +30,16 @@ struct char_buf {
 	unsigned int capacity;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 LIMD_GLUE_API struct char_buf* char_buf_new();
 LIMD_GLUE_API void char_buf_free(struct char_buf* cbuf);
 LIMD_GLUE_API void char_buf_append(struct char_buf* cbuf, unsigned int length, unsigned char* data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __CBUF_H */
