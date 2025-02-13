@@ -56,7 +56,6 @@
         static void f(void)
 #endif
 
-extern void socket_init();
 extern void term_colors_init();
 
 INITIALIZER(internal_glue_init)

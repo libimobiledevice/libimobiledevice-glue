@@ -39,4 +39,6 @@
 
 #include "libimobiledevice-glue/glue.h"
 
+void socket_init();
+
 #endif
