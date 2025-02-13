@@ -104,6 +104,10 @@ void socket_init(void)
 		ExitProcess(1);
 	}
 #endif
+	char *env_debug = getenv("SOCKET_DEBUG");
+        if (env_debug) {
+		verbose = (int)strtol(env_debug, NULL, 10);
+	}
 }
 
 void socket_set_verbose(int level)
