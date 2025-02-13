@@ -39,7 +39,6 @@
 #ifndef HAVE_GETIFADDRS
 #include <iphlpapi.h>
 #endif
-static int wsa_init = 0;
 #ifndef IFF_RUNNING
 #define IFF_RUNNING IFF_UP
 #endif
@@ -96,6 +95,17 @@ static int verbose = 0;
 		fprintf(stderr, "[socket] " msg __VA_OPT__(,) __VA_ARGS__); \
 	}
 
+void socket_init(void)
+{
+#ifdef _WIN32
+	WSADATA wsa_data;
+	if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
+		SOCKET_ERR(0, "WSAStartup failed!\n");
+		ExitProcess(1);
+	}
+#endif
+}
+
 void socket_set_verbose(int level)
 {
 	verbose = level;
@@ -104,14 +114,6 @@ void socket_set_verbose(int level)
 const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
 {
 #ifdef _WIN32
-	WSADATA wsa_data;
-	if (!wsa_init) {
-		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
-			fprintf(stderr, "WSAStartup failed!\n");
-			ExitProcess(-1);
-		}
-		wsa_init = 1;
-	}
 	DWORD addr_out_len = addr_out_size;
 	DWORD addrlen = 0;
 
@@ -470,16 +472,6 @@ int socket_create(const char* addr, uint16_t port)
 	struct addrinfo *result, *rp;
 	char portstr[8];
 	int res;
-#ifdef _WIN32
-	WSADATA wsa_data;
-	if (!wsa_init) {
-		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
-			fprintf(stderr, "WSAStartup failed!\n");
-			ExitProcess(-1);
-		}
-		wsa_init = 1;
-	}
-#endif
 
 	memset(&hints, '\0', sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -1043,14 +1035,6 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 	int addrlen = 0;
 #ifdef _WIN32
 	u_long l_yes = 1;
-	WSADATA wsa_data;
-	if (!wsa_init) {
-		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
-			fprintf(stderr, "WSAStartup failed!\n");
-			ExitProcess(-1);
-		}
-		wsa_init = 1;
-	}
 #endif
 
 	if (addr->sa_family == AF_INET) {
@@ -1191,14 +1175,6 @@ int socket_connect(const char *addr, uint16_t port)
 	int res;
 #ifdef _WIN32
 	u_long l_yes = 1;
-	WSADATA wsa_data;
-	if (!wsa_init) {
-		if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
-			fprintf(stderr, "WSAStartup failed!\n");
-			ExitProcess(-1);
-		}
-		wsa_init = 1;
-	}
 #else
 	int flags = 0;
 #endif
