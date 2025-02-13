@@ -91,6 +91,11 @@ static int wsa_init = 0;
 
 static int verbose = 0;
 
+#define SOCKET_ERR(level, msg, ...) \
+	if (level < verbose) { \
+		fprintf(stderr, "[socket] " msg __VA_OPT__(,) __VA_ARGS__); \
+	}
+
 void socket_set_verbose(int level)
 {
 	verbose = level;
@@ -234,8 +239,7 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 			events = POLLPRI;
 			break;
 		default:
-			if (verbose >= 2)
-				fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
+			SOCKET_ERR(2, "%s: fd_mode %d unsupported\n", __func__, mode);
 			return poll_status_error;
 	}
 	while (1) {
@@ -247,8 +251,7 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 			case 1:
 				if((pfd.revents & (POLLNVAL | POLLERR)) != 0)
 				{
-					if (verbose >= 2)
-						fprintf(stderr, "%s: poll unexpected events: %d\n", __func__, (int)pfd.revents);
+					SOCKET_ERR(2, "%s: poll unexpected events: %d\n", __func__, (int)pfd.revents);
 					return poll_status_error;
 				}
 				return poll_status_success;
@@ -257,14 +260,12 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 			case -1:
 				if(errno == EINTR)
 				{
-					if (verbose >= 2)
-						fprintf(stderr, "%s: EINTR\n", __func__);
+					SOCKET_ERR(2, "%s: EINTR\n", __func__);
 					continue;
 				}
 				// fallthrough
 			default:
-				if (verbose >= 2)
-					fprintf(stderr, "%s: poll failed: %s\n", __func__, strerror(errno));
+				SOCKET_ERR(2, "%s: poll failed: %s\n", __func__, strerror(errno));
 				return poll_status_error;
 		}
 	}
@@ -300,8 +301,7 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 			sret = select(fd + 1, NULL, NULL, &fds, pto);
 			break;
 		default:
-			if (verbose >= 2)
-				fprintf(stderr, "%s: fd_mode %d unsupported\n", __func__, mode);
+			SOCKET_ERR(2, "%s: fd_mode %d unsupported\n", __func__, mode);
 			return poll_status_error;
 		}
 
@@ -313,17 +313,14 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 			switch (errno) {
 			case EINTR:
 				// interrupt signal in select
-				if (verbose >= 2)
-					fprintf(stderr, "%s: EINTR\n", __func__);
+				SOCKET_ERR(2, "%s: EINTR\n", __func__);
 				eagain = 1;
 				break;
 			case EAGAIN:
-				if (verbose >= 2)
-					fprintf(stderr, "%s: EAGAIN\n", __func__);
+				SOCKET_ERR(2, "%s: EAGAIN\n", __func__);
 				break;
 			default:
-				if (verbose >= 2)
-					fprintf(stderr, "%s: select failed: %s\n", __func__, strerror(errno));
+				SOCKET_ERR(2, "%s: select failed: %s\n", __func__, strerror(errno));
 				return poll_status_error;
 			}
 		}
@@ -348,14 +345,13 @@ int socket_create_unix(const char *filename)
 	/* Create the socket. */
 	sock = socket(PF_UNIX, SOCK_STREAM, 0);
 	if (sock < 0) {
-		perror("socket");
+		SOCKET_ERR(1, "socket(): %s\n", strerror(errno));
 		return -1;
 	}
 
 #ifdef SO_NOSIGPIPE
 	if (setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (void*)&yes, sizeof(int)) == -1) {
-		perror("setsockopt()");
-		socket_close(sock);
+		SOCKET_ERR(1, "setsockopt(): %s\n", strerror(errno));
 		return -1;
 	}
 #endif
@@ -366,13 +362,13 @@ int socket_create_unix(const char *filename)
 	name.sun_path[sizeof(name.sun_path) - 1] = '\0';
 
 	if (bind(sock, (struct sockaddr*)&name, sizeof(name)) < 0) {
-		perror("bind");
+		SOCKET_ERR(1, "bind(): %s\n", strerror(errno));
 		socket_close(sock);
 		return -1;
 	}
 
 	if (listen(sock, 100) < 0) {
-		perror("listen");
+		SOCKET_ERR(1, "listen(): %s\n", strerror(errno));
 		socket_close(sock);
 		return -1;
 	}
@@ -392,36 +388,31 @@ int socket_connect_unix(const char *filename)
 
 	// check if socket file exists...
 	if (stat(filename, &fst) != 0) {
-		if (verbose >= 2)
-			fprintf(stderr, "%s: stat '%s': %s\n", __func__, filename,
-					strerror(errno));
+		SOCKET_ERR(2, "%s: stat '%s': %s\n", __func__, filename, strerror(errno));
 		return -1;
 	}
 	// ... and if it is a unix domain socket
 	if (!S_ISSOCK(fst.st_mode)) {
-		if (verbose >= 2)
-			fprintf(stderr, "%s: File '%s' is not a socket!\n", __func__,
-					filename);
+		SOCKET_ERR(2, "%s: File '%s' is not a socket!\n", __func__, filename);
 		return -1;
 	}
 	// make a new socket
 	if ((sfd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
-		if (verbose >= 2)
-			fprintf(stderr, "%s: socket: %s\n", __func__, strerror(errno));
+		SOCKET_ERR(2, "%s: socket: %s\n", __func__, strerror(errno));
 		return -1;
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_SNDBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set send buffer for socket");
+		SOCKET_ERR(1, "Could not set send buffer for socket: %s\n", strerror(errno));
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_RCVBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set receive buffer for socket");
+		SOCKET_ERR(1, "Could not set receive buffer for socket: %s\n", strerror(errno));
 	}
 
 #ifdef SO_NOSIGPIPE
 	if (setsockopt(sfd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&yes, sizeof(int)) == -1) {
-		perror("setsockopt()");
+		SOCKET_ERR(1, "setsockopt(): %s\n", strerror(errno));
 		socket_close(sfd);
 		return -1;
 	}
@@ -462,8 +453,7 @@ int socket_connect_unix(const char *filename)
 	} while (0);
 
 	if (sfd < 0) {
-		if (verbose >= 2)
-			fprintf(stderr, "%s: connect: %s\n", __func__, strerror(errno));
+		SOCKET_ERR(2, "%s: connect: %s\n", __func__, strerror(errno));
 		return -1;
 	}
 
@@ -497,11 +487,11 @@ int socket_create(const char* addr, uint16_t port)
 	hints.ai_flags = AI_PASSIVE | AI_NUMERICSERV;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	sprintf(portstr, "%d", port);
+	snprintf(portstr, 8, "%d", port);
 
 	res = getaddrinfo(addr, portstr, &hints, &result);
 	if (res != 0) {
-		fprintf(stderr, "%s: getaddrinfo: %s\n", __func__, gai_strerror(res));
+		SOCKET_ERR(1, "%s: getaddrinfo: %s\n", __func__, gai_strerror(res));
 		return -1;
 	}
 
@@ -512,14 +502,17 @@ int socket_create(const char* addr, uint16_t port)
 		}
 
 		if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) == -1) {
-			perror("setsockopt()");
+#ifdef _WIN32
+			errno = WSAError_to_errno(WSAGetLastError());
+#endif
+			SOCKET_ERR(1, "setsockopt() SO_REUSEADDR: %s\n", strerror(errno));
 			socket_close(sfd);
 			continue;
 		}
 
 #ifdef SO_NOSIGPIPE
 		if (setsockopt(sfd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&yes, sizeof(int)) == -1) {
-			perror("setsockopt()");
+			SOCKET_ERR(1, "setsockopt() SO_NOSIGPIPE: %s\n", strerror(errno));
 			socket_close(sfd);
 			continue;
 		}
@@ -528,19 +521,28 @@ int socket_create(const char* addr, uint16_t port)
 #if defined(AF_INET6) && defined(IPV6_V6ONLY)
 		if (rp->ai_family == AF_INET6) {
 			if (setsockopt(sfd, IPPROTO_IPV6, IPV6_V6ONLY, (addr) ? (void*)&yes : (void*)&no, sizeof(int)) == -1) {
-				perror("setsockopt() IPV6_V6ONLY");
+#ifdef _WIN32
+				errno = WSAError_to_errno(WSAGetLastError());
+#endif
+				SOCKET_ERR(1, "setsockopt() IPV6_V6ONLY: %s\n", strerror(errno));
 			}
 		}
 #endif
 
 		if (bind(sfd, rp->ai_addr, rp->ai_addrlen) < 0) {
-			perror("bind()");
+#ifdef _WIN32
+			errno = WSAError_to_errno(WSAGetLastError());
+#endif
+			SOCKET_ERR(1, "bind(): %s\n", strerror(errno));
 			socket_close(sfd);
 			continue;
 		}
 
 		if (listen(sfd, 100) < 0) {
-			perror("listen()");
+#ifdef _WIN32
+			errno = WSAError_to_errno(WSAGetLastError());
+#endif
+			SOCKET_ERR(1, "listen(): %s\n", strerror(errno));
 			socket_close(sfd);
 			continue;
 		}
@@ -654,7 +656,7 @@ static int getifaddrs(struct ifaddrs** ifap)
 	do {
 		pAddresses = (IP_ADAPTER_ADDRESSES*)malloc(outBufLen);
 		if (pAddresses == NULL) {
-			printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+			SOCKET_ERR(1, "Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
 			return -1;
 		}
 		dwRetVal = GetAdaptersAddresses(AF_UNSPEC, flags, NULL, pAddresses, &outBufLen);
@@ -834,12 +836,12 @@ static int getifaddrs(struct ifaddrs** ifap)
 /* Assume unicast address for first prefix of operational adapter */
 				if (AF_INET == lpSockaddr->sa_family)
 					if (IN_MULTICAST( ntohl (((struct sockaddr_in*)(lpSockaddr))->sin_addr.s_addr))) {
-						fprintf(stderr, "FATAL: first prefix is non a unicast address\n");
+						SOCKET_ERR(1, "FATAL: first prefix is non a unicast address\n");
 						break;
 					}
 				if (AF_INET6 == lpSockaddr->sa_family)
 					if (IN6_IS_ADDR_MULTICAST( &((struct sockaddr_in6*)(lpSockaddr))->sin6_addr)) {
-						fprintf(stderr, "FATAL: first prefix is not a unicast address\n");
+						SOCKET_ERR(1, "FATAL: first prefix is not a unicast address\n");
 						break;
 					}
 /* Assume subnet or host IP address for XP backward compatibility */
@@ -964,7 +966,10 @@ static int32_t _sockaddr_in6_scope_id(struct sockaddr_in6* addr)
 
 	/* get interfaces */
 	if (getifaddrs(&ifaddr) == -1) {
-		perror("getifaddrs");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "getifaddrs(): %s\n", strerror(errno));
 		return res;
 	}
 
@@ -1073,26 +1078,26 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 	}
 #endif
 	else {
-		fprintf(stderr, "ERROR: Unsupported address family");
+		SOCKET_ERR(1, "ERROR: Unsupported address family\n");
 		return -1;
 	}
 
 	sfd = socket(addr->sa_family, SOCK_STREAM, IPPROTO_TCP);
 	if (sfd == -1) {
-		perror("socket()");
+		SOCKET_ERR(1, "socket(): %s\n", strerror(errno));
 		return -1;
 	}
 
 #ifdef SO_NOSIGPIPE
 	if (setsockopt(sfd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&yes, sizeof(int)) == -1) {
-		perror("setsockopt()");
+		SOCKET_ERR(1, "setsockopt() SO_NOSIGPIPE: %s\n", strerror(errno));
 		socket_close(sfd);
 		return -1;
 	}
 #endif
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) == -1) {
-		perror("setsockopt()");
+		SOCKET_ERR(1, "setsockopt() SO_REUSEADDR: %s\n", strerror(errno));
 		socket_close(sfd);
 		return -1;
 	}
@@ -1146,21 +1151,30 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 		if (verbose >= 2) {
 			char addrtxt[48];
 			socket_addr_to_string(addr, addrtxt, sizeof(addrtxt));
-			fprintf(stderr, "%s: Could not connect to %s port %d\n", __func__, addrtxt, port);
+			SOCKET_ERR(2, "%s: Could not connect to %s port %d\n", __func__, addrtxt, port);
 		}
 		return -1;
 	}
 
 	if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, (void*)&yes, sizeof(int)) == -1) {
-		perror("Could not set TCP_NODELAY on socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set TCP_NODELAY on socket: %s\n", strerror(errno));
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_SNDBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set send buffer for socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set send buffer for socket: %s\n", strerror(errno));
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_RCVBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set receive buffer for socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set receive buffer for socket: %s\n", strerror(errno));
 	}
 
 	return sfd;
@@ -1195,11 +1209,11 @@ int socket_connect(const char *addr, uint16_t port)
 	hints.ai_flags = AI_NUMERICSERV;
 	hints.ai_protocol = IPPROTO_TCP;
 
-	sprintf(portstr, "%d", port);
+	snprintf(portstr, 8, "%d", port);
 
 	res = getaddrinfo(addr, portstr, &hints, &result);
 	if (res != 0) {
-		fprintf(stderr, "%s: getaddrinfo: %s\n", __func__, gai_strerror(res));
+		SOCKET_ERR(1, "%s: getaddrinfo: %s\n", __func__, gai_strerror(res));
 		return -1;
 	}
 
@@ -1211,14 +1225,17 @@ int socket_connect(const char *addr, uint16_t port)
 
 #ifdef SO_NOSIGPIPE
 		if (setsockopt(sfd, SOL_SOCKET, SO_NOSIGPIPE, (void*)&yes, sizeof(int)) == -1) {
-			perror("setsockopt()");
+			SOCKET_ERR(1, "setsockopt() SO_NOSIGPIPE: %s\n", strerror(errno));
 			socket_close(sfd);
 			return -1;
 		}
 #endif
 
 		if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) == -1) {
-			perror("setsockopt()");
+#ifdef _WIN32
+			errno = WSAError_to_errno(WSAGetLastError());
+#endif
+			SOCKET_ERR(1, "setsockopt() SO_REUSEADDR: %s\n", strerror(errno));
 			socket_close(sfd);
 			continue;
 		}
@@ -1269,21 +1286,29 @@ int socket_connect(const char *addr, uint16_t port)
 	freeaddrinfo(result);
 
 	if (rp == NULL) {
-		if (verbose >= 2)
-			fprintf(stderr, "%s: Could not connect to %s:%d\n", __func__, addr, port);
+		SOCKET_ERR(2, "%s: Could not connect to %s:%d\n", __func__, addr, port);
 		return -1;
 	}
 
 	if (setsockopt(sfd, IPPROTO_TCP, TCP_NODELAY, (void*)&yes, sizeof(int)) == -1) {
-		perror("Could not set TCP_NODELAY on socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set TCP_NODELAY on socket: %s\n", strerror(errno));
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_SNDBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set send buffer for socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set send buffer for socket: %s\n", strerror(errno));
 	}
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_RCVBUF, (void*)&bufsize, sizeof(int)) == -1) {
-		perror("Could not set receive buffer for socket");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
+		SOCKET_ERR(1, "Could not set receive buffer for socket: %s\n", strerror(errno));
 	}
 
 	return sfd;
@@ -1292,8 +1317,7 @@ int socket_connect(const char *addr, uint16_t port)
 int socket_check_fd(int fd, fd_mode fdm, unsigned int timeout)
 {
 	if (fd < 0) {
-		if (verbose >= 2)
-			fprintf(stderr, "ERROR: invalid fd in check_fd %d\n", fd);
+		SOCKET_ERR(2, "ERROR: invalid fd in check_fd %d\n", fd);
 		return -EINVAL;
 	}
 
@@ -1313,8 +1337,7 @@ int socket_check_fd(int fd, fd_mode fdm, unsigned int timeout)
 			return -ETIMEDOUT;
 		case poll_status_error:
 		default:
-			if (verbose >= 2)
-				fprintf(stderr, "%s: poll_wrapper failed\n", __func__);
+			SOCKET_ERR(2, "%s: poll_wrapper failed\n", __func__);
 			return -ECONNRESET;
 	}
 
@@ -1333,18 +1356,33 @@ int socket_accept(int fd, uint16_t port)
 	addr_len = sizeof(addr);
 
 	result = accept(fd, (struct sockaddr*)&addr, &addr_len);
-
+#ifdef _WIN32
+	if (result < 0) {
+		errno = WSAError_to_errno(WSAGetLastError());
+	}
+#endif
 	return result;
 }
 
 int socket_shutdown(int fd, int how)
 {
-	return shutdown(fd, how);
+	int result = shutdown(fd, how);
+#ifdef _WIN32
+	if (result < 0) {
+		errno = WSAError_to_errno(WSAGetLastError());
+	}
+#endif
+	return result;
 }
 
-int socket_close(int fd) {
+int socket_close(int fd)
+{
 #ifdef _WIN32
-	return closesocket(fd);
+	int result = closesocket(fd);
+	if (result < 0) {
+		errno = WSAError_to_errno(WSAGetLastError());
+	}
+	return result;
 #else
 	return close(fd);
 #endif
@@ -1374,8 +1412,7 @@ int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigne
 	result = recv(fd, data, length, flags);
 	if (result == 0) {
 		// but this is an error condition
-		if (verbose >= 3)
-			fprintf(stderr, "%s: fd=%d recv returned 0\n", __func__, fd);
+		SOCKET_ERR(3, "%s: fd=%d recv returned 0\n", __func__, fd);
 		return -ECONNRESET;
 	}
 	if (result < 0) {
@@ -1420,7 +1457,9 @@ int socket_get_socket_port(int fd, uint16_t *port)
 
 	addr_len = sizeof(addr);
 	if (0 > getsockname(fd, (struct sockaddr*)&addr, &addr_len)) {
-		perror("getsockname()");
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
 		return -1;
 	}
 
