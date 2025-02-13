@@ -312,6 +312,9 @@ static ALWAYS_INLINE enum poll_status poll_wrapper(int fd, fd_mode mode, int tim
 		} else if (sret == 0) {
 			return poll_status_timeout;
 		} else {
+#ifdef _WIN32
+			errno = WSAError_to_errno(WSAGetLastError());
+#endif
 			switch (errno) {
 			case EINTR:
 				// interrupt signal in select
@@ -1068,6 +1071,9 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 
 	sfd = socket(addr->sa_family, SOCK_STREAM, IPPROTO_TCP);
 	if (sfd == -1) {
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
 		SOCKET_ERR(1, "socket(): %s\n", strerror(errno));
 		return -1;
 	}
@@ -1081,6 +1087,9 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 #endif
 
 	if (setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(int)) == -1) {
+#ifdef _WIN32
+		errno = WSAError_to_errno(WSAGetLastError());
+#endif
 		SOCKET_ERR(1, "setsockopt() SO_REUSEADDR: %s\n", strerror(errno));
 		socket_close(sfd);
 		return -1;
