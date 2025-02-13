@@ -166,7 +166,7 @@ enum poll_status
 #ifdef _MSC_VER
 #define ALWAYS_INLINE __forceinline
 #else
-#define ALWAYS_INLINE __attribute__((always_inline))
+#define ALWAYS_INLINE __inline__ __attribute__((__always_inline__))
 #endif
 
 #ifdef _WIN32
