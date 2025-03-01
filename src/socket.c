@@ -92,7 +92,7 @@ static int verbose = 0;
 
 #define SOCKET_ERR(level, msg, ...) \
 	if (verbose >= level) { \
-		fprintf(stderr, "[socket] " msg __VA_OPT__(,) __VA_ARGS__); \
+		fprintf(stderr, "[socket] " msg , ## __VA_ARGS__); \
 	}
 
 void socket_init(void)
