@@ -117,27 +117,6 @@ void socket_set_verbose(int level)
 
 const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
 {
-#ifdef _WIN32
-	DWORD addr_out_len = addr_out_size;
-	DWORD addrlen = 0;
-
-	if (addr->sa_family == AF_INET) {
-		addrlen = sizeof(struct sockaddr_in);
-	}
-#ifdef AF_INET6
-	else if (addr->sa_family == AF_INET6) {
-		addrlen = sizeof(struct sockaddr_in6);
-	}
-#endif
-	else {
-		errno = EAFNOSUPPORT;
-		return NULL;
-	}
-
-	if (WSAAddressToString(addr, addrlen, NULL, addr_out, &addr_out_len) == 0) {
-		return addr_out;
-	}
-#else
 	const void *addrdata = NULL;
 
 	if (addr->sa_family == AF_INET) {
@@ -153,6 +132,13 @@ const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t 
 		return NULL;
 	}
 
+#ifdef _WIN32
+	//on windonws SDK inet_ntop translates to InetNtop https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-inet_ntop
+	//using ANSI function version, to avoid buffer conversion for UNICODE compilation
+	if (InetNtopA(addr->sa_family, addrdata, addr_out, addr_out_size)) {
+		return addr_out;
+	}
+#else
 	if (inet_ntop(addr->sa_family, addrdata, addr_out, addr_out_size)) {
 		return addr_out;
 	}
