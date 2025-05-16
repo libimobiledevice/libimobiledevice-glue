@@ -140,12 +140,18 @@ static void opack_encode_node(plist_t node, struct char_buf* cbuf)
 			}
 		}	break;
 		case PLIST_DATE: {
+#ifdef HAVE_PLIST_UNIX_DATE
+			int64_t sec = 0;
+			plist_get_unix_date_val(node, &sec);
+			sec -= MAC_EPOCH;
+			double dval = (double)sec;
+#else
 			int32_t sec = 0;
 			int32_t usec = 0;	
 			plist_get_date_val(node, &sec, &usec);
 			time_t tsec = sec;
-			tsec -= MAC_EPOCH;
 			double dval = (double)tsec + ((double)usec / 1000000);
+#endif
 			uint8_t blen = 0x06;
 			char_buf_append(cbuf, 1, &blen);
 			uint64_t u64val = 0;
@@ -272,10 +278,14 @@ static int opack_decode_obj(unsigned char** p, unsigned char* end, plist_t* plis
 		(*p)++;
 		double value = *(double*)*p;
 		time_t sec = (time_t)value;
+#ifdef HAVE_PLIST_UNIX_DATE
+		*plist_out = plist_new_unix_date(sec + MAC_EPOCH);
+#else
 		value -= sec;
 		uint32_t usec = value * 1000000;
-		(*p)+=8;
 		*plist_out = plist_new_date(sec, usec);
+#endif
+		(*p)+=8;
 	} else if (type >= 0x08 && type <= 0x36) {
 		/* numerical type */
 		(*p)++;

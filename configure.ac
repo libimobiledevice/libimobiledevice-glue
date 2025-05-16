@@ -93,6 +93,23 @@ AM_CONDITIONAL(WIN32, test x$win32 = xtrue)
 
 AC_CHECK_MEMBER(struct dirent.d_type, AC_DEFINE(HAVE_DIRENT_D_TYPE, 1, [define if struct dirent has member d_type]),, [#include <dirent.h>])
 
+CACHED_CFLAGS="$CFLAGS"
+CFLAGS+=" $libplist_CFLAGS"
+
+# check if libplist has plist_new_unix_date()
+AC_CACHE_CHECK(for plist_new_unix_date, ac_cv_plist_unix_date,
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+		#include <plist/plist.h>
+		]], [[
+			plist_new_unix_date(0);
+                        return 0;
+		]])],[ac_cv_plist_unix_date=yes],[ac_cv_plist_unix_date=no]))
+if test "$ac_cv_plist_unix_date" = "yes"; then
+	AC_DEFINE(HAVE_PLIST_UNIX_DATE, 1, [Define if libplist has new unix date API (>= 2.7.0)])
+fi
+
+CFLAGS="$CACHED_CFLAGS"
+
 AS_COMPILER_FLAGS(GLOBAL_CFLAGS, "-Wall -Wextra -Wmissing-declarations -Wredundant-decls -Wshadow -Wpointer-arith -Wwrite-strings -Wswitch-default -Wno-unused-parameter -fsigned-char -fvisibility=hidden")
 
 if test "x$enable_static" = "xyes" -a "x$enable_shared" = "xno"; then
