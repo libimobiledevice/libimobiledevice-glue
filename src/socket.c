@@ -134,7 +134,7 @@ const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t 
 		return NULL;
 	}
 
-	if (WSAAddressToString(addr, addrlen, NULL, addr_out, &addr_out_len) == 0) {
+	if (WSAAddressToStringA(addr, addrlen, NULL, addr_out, &addr_out_len) == 0) {
 		return addr_out;
 	}
 #else
