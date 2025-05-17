@@ -1,7 +1,7 @@
 /*
  * utils.h
  * Miscellaneous utilities for string manipulation,
- * file I/O and plist helper.
+ * file I/O, etc.
  *
  * Copyright (c) 2014-2019 Nikias Bassen, All Rights Reserved.
  * Copyright (c) 2013-2014 Martin Szulecki, All Rights Reserved.
