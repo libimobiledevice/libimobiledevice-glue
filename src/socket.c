@@ -117,7 +117,7 @@ void socket_set_verbose(int level)
 
 const char *socket_addr_to_string(struct sockaddr *addr, char *addr_out, size_t addr_out_size)
 {
-#ifdef _WIN32
+#if defined(_WIN32) && ( _WIN32_WINNT < 0x0600 )
 	DWORD addr_out_len = addr_out_size;
 	DWORD addrlen = 0;
 
