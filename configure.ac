@@ -71,7 +71,24 @@ case ${host_os} in
   *mingw32*|*cygwin*)
     AC_MSG_RESULT([${host_os}])
     win32=true
-    AC_DEFINE(WINVER, 0x0501, [minimum Windows version])
+    AC_ARG_WITH([winver],
+      [AS_HELP_STRING([--with-winver], [Set the minimum windows version])],
+      [
+        AS_CASE([${withval}],
+          [0x[[0-9A-Fa-f]]|0x[[0-9A-Fa-f]]*[[0-9A-Fa-f]]], [VAL=${withval}],
+          ['' | *[[!0123456789]]*], [VAL=""],
+          [[[!0]]*], [VAL=${withval}],
+          [VAL=""]
+        )
+        AS_IF([test "x$VAL" != "x"], [
+          AC_DEFINE_UNQUOTED(WINVER, ${VAL}, [minimum Windows version])
+          AC_DEFINE_UNQUOTED(_WIN32_WINNT, ${VAL}, [minimum Windows version])
+        ], [
+          AC_MSG_ERROR([--with-winver expects a hexadecimal value like 0x0600, or a decimal, and must not be 0])
+        ])
+      ],
+      []
+    )
     ;;
   darwin*)
     AC_MSG_RESULT([${host_os}])
