@@ -9,10 +9,10 @@
  * Tom St Denis, tomstdenis@gmail.com, http://libtom.org
  */
 
-#include <stdint.h>
-
 #include "common.h"
 #include "libimobiledevice-glue/sha.h"
+
+#include <stdint.h>
 
 /* the K array */
 static const uint64_t K[80] = {
