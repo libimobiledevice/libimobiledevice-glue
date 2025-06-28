@@ -63,7 +63,7 @@ LIMD_GLUE_API int socket_close(int fd);
 LIMD_GLUE_API int socket_receive(int fd, void *data, size_t length);
 LIMD_GLUE_API int socket_peek(int fd, void *data, size_t length);
 LIMD_GLUE_API int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigned int timeout);
-LIMD_GLUE_API int socket_send(int fd, void *data, size_t length);
+LIMD_GLUE_API int socket_send(int fd, const void *data, size_t length);
 
 LIMD_GLUE_API int socket_get_socket_port(int fd, uint16_t *port);
 

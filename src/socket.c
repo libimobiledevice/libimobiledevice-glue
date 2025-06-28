@@ -1413,7 +1413,7 @@ int socket_receive_timeout(int fd, void *data, size_t length, int flags, unsigne
 	return result;
 }
 
-int socket_send(int fd, void *data, size_t length)
+int socket_send(int fd, const void *data, size_t length)
 {
 	int flags = 0;
 	int res = socket_check_fd(fd, FDM_WRITE, SEND_TIMEOUT);
