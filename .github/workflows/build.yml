@@ -102,7 +102,7 @@ jobs:
         name: libimobiledevice-glue-latest_macOS
         path: libimobiledevice-glue.tar
   build-windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
@@ -123,6 +123,7 @@ jobs:
           base-devel
           git
           mingw-w64-${{ matrix.arch }}-gcc
+          mingw-w64-${{ matrix.arch }}-pkg-config
           make
           libtool
           autoconf
