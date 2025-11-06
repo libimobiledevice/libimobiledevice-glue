@@ -220,7 +220,7 @@ char *string_toupper(char* str)
 	char *res = strdup(str);
 	size_t i;
 	for (i = 0; i < strlen(res); i++) {
-		res[i] = toupper(res[i]);
+		res[i] = toupper((unsigned char)res[i]);
 	}
 	return res;
 }
