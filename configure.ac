@@ -39,6 +39,7 @@ PKG_CHECK_MODULES(libplist, libplist-2.0 >= $LIBPLIST_VERSION)
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h])
+AC_CHECK_HEADERS([netpacket/packet.h net/if_dl.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
