@@ -56,10 +56,10 @@
 #ifdef AF_INET6
 #include <net/if.h>
 #include <ifaddrs.h>
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__HAIKU__)
+#if defined (HAVE_NET_IF_DL_H)
 #include <net/if_dl.h>
 #endif
-#ifdef __linux__
+#if defined (HAVE_NETPACKET_PACKET_H)
 #include <netpacket/packet.h>
 #endif
 #endif
@@ -907,28 +907,32 @@ int get_primary_mac_address(unsigned char mac_addr_buf[6])
 			if (ifa->ifa_flags & IFF_LOOPBACK) {
 				continue;
 			}
-#if defined(__APPLE__) || defined (__FreeBSD__) || defined (__HAIKU__)
+#if defined (HAVE_NET_IF_DL_H)
+			/* BSD, Darwin, and Haiku */
 			if (ifa->ifa_addr->sa_family != AF_LINK) {
 				continue;
 			}
 #if defined (__APPLE__)
-			if (!strcmp(ifa->ifa_name, "en0")) {
-#elif defined (__FreeBSD__) || defined (__HAIKU__)
-			{
-#endif
-				memcpy(mac_addr_buf, (unsigned char *)LLADDR((struct sockaddr_dl *)(ifa)->ifa_addr), 6);
-				result = 0;
-				break;
+			if (strcmp(ifa->ifa_name, "en0") != 0) {
+				continue;
 			}
-#elif defined (__linux__)
+#endif
+			memcpy(mac_addr_buf, (unsigned char *)LLADDR((struct sockaddr_dl *)(ifa)->ifa_addr), 6);
+			result = 0;
+			break;
+#elif defined (HAVE_NETPACKET_PACKET_H)
+			/* Linux */
 			if (ifa->ifa_addr->sa_family != AF_PACKET) {
 				continue;
 			}
-			if (strcmp(ifa->ifa_name, "lo") != 0) {
-				memcpy(mac_addr_buf, ((struct sockaddr_ll*)ifa->ifa_addr)->sll_addr, 6);
-				result = 0;
-				break;
+#if defined (__linux__)
+			if (strcmp(ifa->ifa_name, "lo") == 0) {
+				continue;
 			}
+#endif
+			memcpy(mac_addr_buf, ((struct sockaddr_ll*)ifa->ifa_addr)->sll_addr, 6);
+			result = 0;
+			break;
 #elif defined (WIN32)
 			if (ifa->ifa_data) {
 				memcpy(mac_addr_buf, ifa->ifa_data, 6);
