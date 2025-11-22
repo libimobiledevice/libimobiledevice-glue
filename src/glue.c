@@ -26,6 +26,8 @@
 #include <windows.h>
 #endif
 
+#include <stdlib.h>
+
 #include "common.h"
 #include "libimobiledevice-glue/thread.h"
 
@@ -58,10 +60,16 @@
 
 extern void term_colors_init();
 
+static void internal_glue_deinit(void)
+{
+	// NO-OP
+}
+
 INITIALIZER(internal_glue_init)
 {
 	socket_init();
 	term_colors_init();
+	atexit(internal_glue_deinit);
 }
 
 const char* libimobiledevice_glue_version()
