@@ -1,3 +1,13 @@
+Version 1.3.3
+~~~~~~~~~~~~~
+
+- Changes:
+  * socket: Use const void* instead of void* in signature of socket_send()
+  * socket: Improve portability by replacing OS-specific macros with AC_CHECK_HEADERS (adds NetBSD support)
+  * endianness: Default to little endian if __BYTE_ORDER is not defined
+  * Add atexit call to (empty) deinit function to prevent stripping off initializer code
+  * utils: Correct ctype(3) usage in string_toupper() (cast to unsigned char before toupper())
+
 Version 1.3.2
 ~~~~~~~~~~~~~
 
