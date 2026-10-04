@@ -17,7 +17,7 @@ jobs:
       run: |
           echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
@@ -31,7 +31,7 @@ jobs:
           done
           sudo cp -r extract/* /
           sudo ldconfig
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen
       run: ./autogen.sh PKG_CONFIG_PATH=/usr/local/lib/pkgconfig LDFLAGS="-Wl,-rpath=/usr/local/lib"
     - name: make
@@ -44,7 +44,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: libimobiledevice-glue-latest_${{env.target_triplet}}
         path: libimobiledevice-glue.tar
@@ -60,7 +60,7 @@ jobs:
           fi
       shell: bash
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
@@ -73,7 +73,7 @@ jobs:
             tar -C extract -xvf $I
           done
           sudo cp -r extract/* /
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen
       run: |
           SDKDIR=`xcrun --sdk macosx --show-sdk-path`
@@ -97,7 +97,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: libimobiledevice-glue-latest_macOS
         path: libimobiledevice-glue.tar
@@ -134,7 +134,7 @@ jobs:
           echo "dest=$dest" >> $GITHUB_ENV
           echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
@@ -147,7 +147,7 @@ jobs:
             tar -C extract -xvf $I
           done
           cp -r extract/* /
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: autogen
       run: ./autogen.sh CC=gcc CXX=g++
     - name: make
@@ -160,7 +160,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar ${{ env.dest }}
     - name: publish artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: libimobiledevice-glue-latest_${{ matrix.arch }}-${{ env.dest }}
         path: libimobiledevice-glue.tar
