@@ -102,7 +102,7 @@ jobs:
         name: libimobiledevice-glue-latest_macOS
         path: libimobiledevice-glue.tar
   build-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
     defaults:
       run:
         shell: msys2 {0}
@@ -110,8 +110,11 @@ jobs:
       fail-fast: false
       matrix:
         include: [
-          { msystem: MINGW64, arch: x86_64 },
-          { msystem: MINGW32, arch: i686   }
+          { runner: windows-latest, msystem: CLANG64, arch: x86_64, flavor: w64-clang, cc: clang },
+          { runner: windows-latest, msystem: UCRT64, arch: x86_64, flavor: w64-ucrt, cc: gcc },
+          { runner: windows-latest, msystem: MINGW64, arch: x86_64, flavor: w64, cc: gcc },
+          { runner: windows-latest, msystem: MINGW32, arch: i686, flavor: w64, cc: gcc },
+          { runner: windows-11-arm, msystem: CLANGARM64, arch: aarch64, flavor: w64-clang, cc: clang }
         ]
     steps:
     - uses: msys2/setup-msys2@v2
@@ -119,11 +122,12 @@ jobs:
         msystem: ${{ matrix.msystem }}
         release: false
         update: false
+        suppress-deprecation-warnings: msystem-mingw32 msystem-mingw64
         install: >-
           base-devel
           git
-          mingw-w64-${{ matrix.arch }}-gcc
-          mingw-w64-${{ matrix.arch }}-pkg-config
+          mingw-${{ matrix.flavor }}-${{ matrix.arch }}-${{ matrix.cc }}
+          mingw-${{ matrix.flavor }}-${{ matrix.arch }}-pkgconf
           make
           libtool
           autoconf
@@ -138,7 +142,7 @@ jobs:
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
-        name: libplist-latest_${{ matrix.arch }}-${{ env.dest }}
+        name: libplist-latest_${{ matrix.arch }}-windows-${{ env.dest }}
         repo: libimobiledevice/libplist
     - name: install external dependencies
       run: |
@@ -149,7 +153,7 @@ jobs:
           cp -r extract/* /
     - uses: actions/checkout@v6
     - name: autogen
-      run: ./autogen.sh CC=gcc CXX=g++
+      run: ./autogen.sh
     - name: make
       run: make
     - name: make install
@@ -162,5 +166,5 @@ jobs:
     - name: publish artifact
       uses: actions/upload-artifact@v6
       with:
-        name: libimobiledevice-glue-latest_${{ matrix.arch }}-${{ env.dest }}
+        name: libimobiledevice-glue-latest_${{ matrix.arch }}-windows-${{ env.dest }}
         path: libimobiledevice-glue.tar
