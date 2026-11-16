@@ -1,6 +1,10 @@
 name: build
 
-on: [push]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 1 * *'
 
 jobs:
   build-linux-ubuntu:
@@ -13,7 +17,7 @@ jobs:
       run: |
           echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v2
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
@@ -27,7 +31,7 @@ jobs:
           done
           sudo cp -r extract/* /
           sudo ldconfig
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: autogen
       run: ./autogen.sh PKG_CONFIG_PATH=/usr/local/lib/pkgconfig LDFLAGS="-Wl,-rpath=/usr/local/lib"
     - name: make
@@ -40,7 +44,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v6
       with:
         name: libimobiledevice-glue-latest_${{env.target_triplet}}
         path: libimobiledevice-glue.tar
@@ -56,7 +60,7 @@ jobs:
           fi
       shell: bash
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v2
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
@@ -69,7 +73,7 @@ jobs:
             tar -C extract -xvf $I
           done
           sudo cp -r extract/* /
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: autogen
       run: |
           SDKDIR=`xcrun --sdk macosx --show-sdk-path`
@@ -93,12 +97,12 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar usr
     - name: publish artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v6
       with:
         name: libimobiledevice-glue-latest_macOS
         path: libimobiledevice-glue.tar
   build-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
     defaults:
       run:
         shell: msys2 {0}
@@ -106,8 +110,11 @@ jobs:
       fail-fast: false
       matrix:
         include: [
-          { msystem: MINGW64, arch: x86_64 },
-          { msystem: MINGW32, arch: i686   }
+          { runner: windows-latest, msystem: CLANG64, arch: x86_64, flavor: w64-clang, cc: clang },
+          { runner: windows-latest, msystem: UCRT64, arch: x86_64, flavor: w64-ucrt, cc: gcc },
+          { runner: windows-latest, msystem: MINGW64, arch: x86_64, flavor: w64, cc: gcc },
+          { runner: windows-latest, msystem: MINGW32, arch: i686, flavor: w64, cc: gcc },
+          { runner: windows-11-arm, msystem: CLANGARM64, arch: aarch64, flavor: w64-clang, cc: clang }
         ]
     steps:
     - uses: msys2/setup-msys2@v2
@@ -115,10 +122,12 @@ jobs:
         msystem: ${{ matrix.msystem }}
         release: false
         update: false
+        suppress-deprecation-warnings: msystem-mingw32 msystem-mingw64
         install: >-
           base-devel
           git
-          mingw-w64-${{ matrix.arch }}-gcc
+          mingw-${{ matrix.flavor }}-${{ matrix.arch }}-${{ matrix.cc }}
+          mingw-${{ matrix.flavor }}-${{ matrix.arch }}-pkgconf
           make
           libtool
           autoconf
@@ -129,11 +138,11 @@ jobs:
           echo "dest=$dest" >> $GITHUB_ENV
           echo "target_triplet=`gcc -dumpmachine`" >> $GITHUB_ENV
     - name: fetch libplist
-      uses: dawidd6/action-download-artifact@v2
+      uses: dawidd6/action-download-artifact@v24
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
         workflow: build.yml
-        name: libplist-latest_${{ matrix.arch }}-${{ env.dest }}
+        name: libplist-latest_${{ matrix.arch }}-windows-${{ env.dest }}
         repo: libimobiledevice/libplist
     - name: install external dependencies
       run: |
@@ -142,9 +151,9 @@ jobs:
             tar -C extract -xvf $I
           done
           cp -r extract/* /
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: autogen
-      run: ./autogen.sh CC=gcc CXX=g++
+      run: ./autogen.sh
     - name: make
       run: make
     - name: make install
@@ -155,7 +164,7 @@ jobs:
           DESTDIR=`pwd`/dest make install
           tar -C dest -cf libimobiledevice-glue.tar ${{ env.dest }}
     - name: publish artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v6
       with:
-        name: libimobiledevice-glue-latest_${{ matrix.arch }}-${{ env.dest }}
+        name: libimobiledevice-glue-latest_${{ matrix.arch }}-windows-${{ env.dest }}
         path: libimobiledevice-glue.tar

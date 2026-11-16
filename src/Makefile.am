@@ -12,8 +12,15 @@ libimobiledevice_glue_1_0_la_SOURCES =	\
 	socket.c	\
 	thread.c	\
 	utils.c		\
+	nskeyedarchive.c \
 	collection.c	\
 	termcolors.c	\
+	cbuf.c          \
+	opack.c         \
+	tlv.c           \
+	sha1.c          \
+	sha256.c        \
+	sha512.c        \
 	common.h
 
 if WIN32

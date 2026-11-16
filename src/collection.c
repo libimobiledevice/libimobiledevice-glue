@@ -37,7 +37,7 @@
 
 #define CAPACITY_STEP 8
 
-LIBIMOBILEDEVICE_GLUE_API void collection_init(struct collection *col)
+void collection_init(struct collection *col)
 {
 	col->list = malloc(sizeof(void *) * CAPACITY_STEP);
 	assert(col->list);
@@ -45,7 +45,7 @@ LIBIMOBILEDEVICE_GLUE_API void collection_init(struct collection *col)
 	col->capacity = CAPACITY_STEP;
 }
 
-LIBIMOBILEDEVICE_GLUE_API collection_t* collection_new(void)
+collection_t* collection_new(void)
 {
 	collection_t *col = malloc(sizeof(collection_t));
 	assert(col);
@@ -53,7 +53,7 @@ LIBIMOBILEDEVICE_GLUE_API collection_t* collection_new(void)
 	return col;
 }
 
-LIBIMOBILEDEVICE_GLUE_API void collection_free(struct collection *col)
+void collection_free(struct collection *col)
 {
 	assert(col->list);
 
@@ -62,14 +62,14 @@ LIBIMOBILEDEVICE_GLUE_API void collection_free(struct collection *col)
 	col->capacity = 0;
 }
 
-LIBIMOBILEDEVICE_GLUE_API void collection_free_all(struct collection *col) 
+void collection_free_all(struct collection *col)
 {
 	assert(col);
 	assert(col->list);
 
 	for (int i = 0; i < col->capacity; i++)
 	{
-		if (col->list[i] != NULL) 
+		if (col->list[i] != NULL)
 		{
 			free(col->list[i]);
 			col->list[i] = NULL;
@@ -78,7 +78,7 @@ LIBIMOBILEDEVICE_GLUE_API void collection_free_all(struct collection *col)
 	collection_free(col);
 }
 
-LIBIMOBILEDEVICE_GLUE_API void collection_ensure_capacity(struct collection *col, size_t capacity)
+void collection_ensure_capacity(struct collection *col, size_t capacity)
 {
 	assert(col);
 	assert(col->list);
@@ -95,7 +95,7 @@ LIBIMOBILEDEVICE_GLUE_API void collection_ensure_capacity(struct collection *col
 	return;
 }
 
-LIBIMOBILEDEVICE_GLUE_API void collection_add(struct collection *col, void *element)
+void collection_add(struct collection *col, void *element)
 {
 	assert(col);
 	assert(col->list);
@@ -116,7 +116,7 @@ LIBIMOBILEDEVICE_GLUE_API void collection_add(struct collection *col, void *elem
 	col->capacity += CAPACITY_STEP;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int collection_remove(struct collection *col, void *element)
+int collection_remove(struct collection *col, void *element)
 {
 	assert(col);
 	assert(col->list);
@@ -133,7 +133,7 @@ LIBIMOBILEDEVICE_GLUE_API int collection_remove(struct collection *col, void *el
 	return -1;
 }
 
-LIBIMOBILEDEVICE_GLUE_API int collection_count(struct collection *col)
+int collection_count(struct collection *col)
 {
 	assert(col);
 	assert(col->list);
@@ -146,7 +146,7 @@ LIBIMOBILEDEVICE_GLUE_API int collection_count(struct collection *col)
 	return cnt;
 }
 
-LIBIMOBILEDEVICE_GLUE_API void collection_copy(struct collection *dest, struct collection *src)
+void collection_copy(struct collection *dest, struct collection *src)
 {
 	assert(src);
 	assert(src->list);

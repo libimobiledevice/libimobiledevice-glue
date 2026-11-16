@@ -1,0 +1,65 @@
+Version 1.3.3
+~~~~~~~~~~~~~
+
+- Changes:
+  * socket: Use const void* instead of void* in signature of socket_send()
+  * socket: Improve portability by replacing OS-specific macros with AC_CHECK_HEADERS (adds NetBSD support)
+  * endianness: Default to little endian if __BYTE_ORDER is not defined
+  * Add atexit call to (empty) deinit function to prevent stripping off initializer code
+  * utils: Correct ctype(3) usage in string_toupper() (cast to unsigned char before toupper())
+
+Version 1.3.2
+~~~~~~~~~~~~~
+
+- Changes:
+  * socket: [macOS] Fix build on older macOS
+  * socket: [Windows] Prevent crash by properly initializing memory buffers
+  * Switch to better initializer strategy
+  * Fix compilation on MSVC
+  * Add extern "C" guards to public headers
+  * socket: Improve error message output/verbose logging
+  * socket: [Windows] Make sure errno is set in error conditions
+  * socket: Allow setting debug level via environment variable
+  * socket: [Windows] Use WSAAddressToStringA (ANSI version)
+  * socket: [Windows] Use inet_ntop instead of WSAAddressToStringA for >= Vista
+
+Version 1.3.1
+~~~~~~~~~~~~~
+
+- Fixes:
+  * socket: Fix scope_id lookup for socket_connect_addr()
+
+Version 1.3.0
+~~~~~~~~~~~~~
+
+- Changes:
+  * Add SHA-1, SHA-224, SHA-256, SHA-384, and SHA-512 functions to interface
+  * socket: Create an IPv4 compatible IPv6 socket when NULL is passed to socket_create
+  * socket: Haiku compilation fixes
+
+Version 1.2.0
+~~~~~~~~~~~~~
+
+- Changes:
+  * Add helper code to deal with NSKeyedArchiver plist data
+
+- Bugfixes:
+  * socket: Make sure errno is always set on error, and always return a meaningful error code
+
+Version 1.1.0
+~~~~~~~~~~~~~
+
+- Changes:
+  * socket: Use poll() - when available - instead of select()
+  * socket: Allow NULL as address for socket_create() and socket_connect()
+  * win32: Remove windows.h from public headers
+  * Add version function to interface
+
+- Bugfixes:
+  * opack: Fixed 32bit buffer overflow
+  * opack: Fix parsing of 32 and 64 bit packed values
+
+Version 1.0.0
+~~~~~~~~~~~~~
+
+First public release.

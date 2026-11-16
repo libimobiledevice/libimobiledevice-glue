@@ -25,20 +25,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <libimobiledevice-glue/glue.h>
+
 typedef struct collection {
 	void **list;
 	int capacity;
 } collection_t;
 
-void collection_init(struct collection *col);
-collection_t* collection_new(void);
-void collection_add(struct collection *col, void *element);
-int collection_remove(struct collection *col, void *element);
-int collection_count(struct collection *col);
-void collection_free(struct collection *col);
-void collection_free_all(struct collection *col);
-void collection_ensure_capacity(struct collection *col, size_t size);
-void collection_copy(struct collection *dest, struct collection *src);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LIMD_GLUE_API void collection_init(struct collection *col);
+LIMD_GLUE_API collection_t* collection_new(void);
+LIMD_GLUE_API void collection_add(struct collection *col, void *element);
+LIMD_GLUE_API int collection_remove(struct collection *col, void *element);
+LIMD_GLUE_API int collection_count(struct collection *col);
+LIMD_GLUE_API void collection_free(struct collection *col);
+LIMD_GLUE_API void collection_free_all(struct collection *col);
+LIMD_GLUE_API void collection_ensure_capacity(struct collection *col, size_t size);
+LIMD_GLUE_API void collection_copy(struct collection *dest, struct collection *src);
 
 #define MERGE_(a,b) a ## _ ## b
 #define LABEL_(a,b) MERGE_(a, b)
@@ -54,5 +60,9 @@ void collection_copy(struct collection *dest, struct collection *src);
 #define ENDFOREACH \
 		} \
 	} while(0);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __LIMD_COLLECTION_H
