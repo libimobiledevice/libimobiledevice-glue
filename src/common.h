@@ -28,7 +28,11 @@
 #ifdef LIMD_GLUE_STATIC
   #define LIMD_GLUE_API
 #elif defined(_WIN32)
-  #define LIMD_GLUE_API __declspec( dllexport )
+  #ifdef DLL_EXPORT
+    #define LIMD_GLUE_API __declspec( dllexport )
+  #else
+    #define LIMD_GLUE_API
+  #endif
 #else
   #if __GNUC__ >= 4
     #define LIMD_GLUE_API __attribute__((visibility("default")))

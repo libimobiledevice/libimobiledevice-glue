@@ -23,13 +23,7 @@
 #define __GLUE_H
 
 #ifndef LIMD_GLUE_API
-  #ifdef LIMD_GLUE_STATIC
-    #define LIMD_GLUE_API
-  #elif defined(_WIN32)
-    #define LIMD_GLUE_API __declspec(dllimport)
-  #else
-    #define LIMD_GLUE_API
-  #endif
+  #define LIMD_GLUE_API
 #endif
 
 #ifdef __cplusplus
