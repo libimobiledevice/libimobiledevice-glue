@@ -95,12 +95,32 @@ static int verbose = 0;
 		fprintf(stderr, "[socket] " msg , ## __VA_ARGS__); \
 	}
 
+#ifdef _WIN32
+static INIT_ONCE wsa_once = INIT_ONCE_STATIC_INIT;
+
+static BOOL CALLBACK wsa_startup(PINIT_ONCE once, PVOID param, PVOID *context)
+{
+	WSADATA wsa_data;
+	return WSAStartup(MAKEWORD(2,2), &wsa_data) == ERROR_SUCCESS;
+}
+
+/* Start Winsock once, before the first socket. The library's initializer in
+ * glue.c does it too, but a static link leaves glue.o out when nothing calls
+ * into it, and its initializer with it. */
+static int wsa_init(void)
+{
+	if (!InitOnceExecuteOnce(&wsa_once, wsa_startup, NULL, NULL)) {
+		SOCKET_ERR(0, "WSAStartup failed!\n");
+		return -1;
+	}
+	return 0;
+}
+#endif
+
 void socket_init(void)
 {
 #ifdef _WIN32
-	WSADATA wsa_data;
-	if (WSAStartup(MAKEWORD(2,2), &wsa_data) != ERROR_SUCCESS) {
-		SOCKET_ERR(0, "WSAStartup failed!\n");
+	if (wsa_init() < 0) {
 		ExitProcess(1);
 	}
 #endif
@@ -472,6 +492,11 @@ int socket_connect_unix(const char *filename)
 
 int socket_create(const char* addr, uint16_t port)
 {
+#ifdef _WIN32
+	if (wsa_init() < 0) {
+		return -1;
+	}
+#endif
 	int sfd = -1;
 	int yes = 1;
 	int no = 0;
@@ -1040,6 +1065,11 @@ static int32_t _sockaddr_in6_scope_id(struct sockaddr_in6* addr)
 
 int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 {
+#ifdef _WIN32
+	if (wsa_init() < 0) {
+		return -1;
+	}
+#endif
 	int sfd = -1;
 	int yes = 1;
 	int bufsize = 0x20000;
@@ -1183,6 +1213,11 @@ int socket_connect_addr(struct sockaddr* addr, uint16_t port)
 
 int socket_connect(const char *addr, uint16_t port)
 {
+#ifdef _WIN32
+	if (wsa_init() < 0) {
+		return -1;
+	}
+#endif
 	int sfd = -1;
 	int yes = 1;
 	int bufsize = 0x20000;
