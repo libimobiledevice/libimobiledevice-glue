@@ -19,25 +19,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef COLLECTION_H
-#define COLLECTION_H
+#ifndef __LIMD_COLLECTION_H
+#define __LIMD_COLLECTION_H
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include <libimobiledevice-glue/glue.h>
 
-struct collection {
+typedef struct collection {
 	void **list;
 	int capacity;
-};
+} collection_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 LIMD_GLUE_API void collection_init(struct collection *col);
+LIMD_GLUE_API collection_t* collection_new(void);
 LIMD_GLUE_API void collection_add(struct collection *col, void *element);
 LIMD_GLUE_API int collection_remove(struct collection *col, void *element);
 LIMD_GLUE_API int collection_count(struct collection *col);
 LIMD_GLUE_API void collection_free(struct collection *col);
+LIMD_GLUE_API void collection_free_all(struct collection *col);
+LIMD_GLUE_API void collection_ensure_capacity(struct collection *col, size_t size);
 LIMD_GLUE_API void collection_copy(struct collection *dest, struct collection *src);
 
 #define MERGE_(a,b) a ## _ ## b
@@ -59,4 +65,4 @@ LIMD_GLUE_API void collection_copy(struct collection *dest, struct collection *s
 }
 #endif
 
-#endif
+#endif // __LIMD_COLLECTION_H
